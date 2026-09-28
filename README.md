@@ -131,7 +131,7 @@ Open [http://localhost:3000](http://localhost:3000).
 
 The starter interface works with the reviewed GS F211 seed dataset in `lib/seed.ts`. To ingest your authorized course material, create `papers/`, `course handout /`, and `exam notices /` folders, add the source files, then run `npm run ingest`. The script hashes files, extracts text, flags weak PDF extraction for OCR review, and writes a local review catalogue to `data/ingested-materials.json`.
 
-The repository intentionally excludes course PDFs, answer keys, notices, generated catalogues, and local source previews. That prevents academic material and student notices from being published through GitHub.
+Course PDFs, answer keys, notices, generated catalogues, and local source previews are tracked in this private repository so the project team can reproduce the GS F211 pilot. Keep the repository private and do not redistribute these academic materials or student notices without permission.
 
 ### Enable AI explanations
 
