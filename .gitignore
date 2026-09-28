@@ -1,0 +1,9 @@
+node_modules
+.next
+.env.local
+data/ingested-materials.json
+.DS_Store
+papers/
+course handout /
+exam notices /
+public/materials/
