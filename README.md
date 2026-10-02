@@ -129,7 +129,7 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-The starter interface works with the reviewed GS F211 seed dataset in `lib/seed.ts`. To ingest your authorized course material, create `papers/`, `course handout /`, and `exam notices /` folders, add the source files, then run `npm run ingest`. The script hashes files, extracts text, flags weak PDF extraction for OCR review, and writes a local review catalogue to `data/ingested-materials.json`.
+The demo covers two courses, GS F211 and CS F364, with the reviewed seed dataset in `lib/seed.ts`. To ingest your authorized course material, add source files under `papers/` (one subfolder per course, and per campus if needed), `course handout /`, and `exam notices /`, then run `npm run ingest`. The script walks subfolders, hashes files, extracts text page by page, and writes a local review catalogue to `data/ingested-materials.json`. On macOS with `tesseract` installed (`brew install tesseract`), scanned PDF pages are OCR'd automatically and cached in `data/ocr-cache/`; elsewhere they are flagged for OCR review. New papers also need an entry in `materials` in `lib/seed.ts`, with `sections` when one PDF bundles several exams.
 
 Course PDFs, answer keys, notices, generated catalogues, and local source previews are tracked in this private repository so the project team can reproduce the GS F211 pilot. Keep the repository private and do not redistribute these academic materials or student notices without permission.
 
@@ -146,6 +146,10 @@ OPENAI_API_KEY=your_key_here
 ```
 
 Keys are excluded from Git through `.gitignore`.
+
+### Static demo on GitHub Pages
+
+Every push to `main` runs `.github/workflows/deploy-pages.yml`, which builds a static export (`GITHUB_PAGES=true npm run build`) and publishes it to https://sanya28wd.github.io/AI-Library-Assistant/. GitHub Pages cannot run API routes, so the static demo leaves out the study chatbot, notice file upload and AI explanations; pasted notice text is still matched in the browser. Run the app locally for the full version.
 
 ### Start local Supabase
 
