@@ -1,11 +1,11 @@
 import { readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
-import { courseForId, examLabel, materials, sourcePath } from "@/lib/seed";
-import { ChatSource, Material } from "@/lib/types";
+import { courseForId, examLabel, materials, questions, sourcePath } from "@/lib/seed";
+import { ChatSource, Material, QuestionVisual } from "@/lib/types";
 
 type IngestedMaterial = { fileName: string; relativePath?: string; extension: string; text: string; pages?: string[] | null };
 
-type Passage = { material: Material; page: number | null; text: string; terms: Map<string, number>; sequence: string; length: number };
+type Passage = { material: Material; page: number | null; text: string; terms: Map<string, number>; sequence: string; length: number; visuals: QuestionVisual[] };
 
 const stopwords = new Set("the and for are but not you all any can had her was one our out has his how its may who did get him she too use what when where which while with this that from they them then than there their these those would could should about into your more most some such only other also been being have were will each does just very what's explain".split(" "));
 
@@ -31,6 +31,13 @@ function chunk(text: string, size = 900): string[] {
   return chunks;
 }
 
+function indexPassage(material: Material, page: number | null, text: string, visuals: QuestionVisual[]): Passage {
+  const tokens = tokenize(text);
+  const terms = new Map<string, number>();
+  tokens.forEach((token) => terms.set(token, (terms.get(token) ?? 0) + 1));
+  return { material, page, text, terms, sequence: ` ${tokens.join(" ")} `, length: tokens.length, visuals };
+}
+
 const catalogue = join(process.cwd(), "data", "ingested-materials.json");
 
 function buildIndex(): Passage[] {
@@ -49,12 +56,16 @@ function buildIndex(): Passage[] {
     const pages = item.pages ?? (item.extension === ".pdf" ? item.text.split(/\n\n/).slice(1) : [item.text]);
     pages.forEach((pageText, index) => {
       for (const text of chunk(pageText)) {
-        const terms = new Map<string, number>();
-        const tokens = tokenize(text);
-        tokens.forEach((token) => terms.set(token, (terms.get(token) ?? 0) + 1));
-        passages.push({ material, page: item.extension === ".pdf" ? index + 1 : null, text, terms, sequence: ` ${tokens.join(" ")} `, length: tokens.length });
+        passages.push(indexPassage(material, item.extension === ".pdf" ? index + 1 : null, text, []));
       }
     });
+    // Keep each diagram question whole, even when several diagrams share a source page.
+    for (const question of questions.filter((entry) => entry.materialId === material.id && entry.visuals?.length)) {
+      const visuals = question.visuals;
+      if (!visuals?.length) continue;
+      const text = `${question.text}\n\n${visuals.map((visual) => `${visual.caption}\n${visual.description}`).join("\n\n")}`;
+      passages.push(indexPassage(material, question.page, text, visuals));
+    }
   }
   return passages;
 }
@@ -109,6 +120,7 @@ export function retrieve(query: string, courseId: string, limit = 6): ChatSource
     label: label(passage.material, passage.page),
     page: passage.page,
     href: `${sourcePath(passage.material.fileName)}${passage.page ? `#page=${passage.page}` : ""}`,
-    excerpt: passage.text
+    excerpt: passage.text,
+    ...(passage.visuals.length > 0 && { visuals: passage.visuals })
   }));
 }

@@ -4,7 +4,7 @@ import { FormEvent, Fragment, useEffect, useRef, useState } from "react";
 import katex from "katex";
 import "katex/dist/katex.min.css";
 import { FileText, Loader2, MessageCircle, Send, X } from "lucide-react";
-import { chatSuggestions } from "@/lib/seed";
+import { chatSuggestions, sourcePath } from "@/lib/seed";
 import { staticDemo } from "@/lib/site";
 import { ChatMessage, ChatResponse, ChatSource, Course } from "@/lib/types";
 
@@ -124,10 +124,20 @@ export function ChatWidget({ course }: { course: Course }) {
                     <div className="mt-2 space-y-1.5">
                       <p className="text-[11px] font-semibold uppercase tracking-wide text-[#777]">Sources</p>
                       {turn.sources.map((source) => (
-                        <a key={source.id} href={source.href} target="_blank" rel="noreferrer" className="block rounded-[3px] border border-[#ececec] bg-white px-2.5 py-1.5 text-[12px] hover:border-[#1b8a9b]">
+                        <div key={source.id}>
+                        <a href={source.href} target="_blank" rel="noreferrer" className="block rounded-[3px] border border-[#ececec] bg-white px-2.5 py-1.5 text-[12px] hover:border-[#1b8a9b]">
                           <span className="flex items-center gap-1.5 font-semibold text-[#1f2328]"><span className="text-[#1b6f7c]">[{source.id}]</span><FileText size={12} className="shrink-0 text-[#777]" />{source.label}{source.page ? ` · page ${source.page}` : ""}</span>
                           {turn.mode === "sources-only" && <span className="mt-1 line-clamp-3 text-[#555]">{source.excerpt}</span>}
                         </a>
+                        {source.visuals && source.visuals.length > 0 && <details className="rounded-[3px] border border-[#d6e8eb] bg-white p-2 text-[12px]">
+                          <summary className="cursor-pointer font-semibold text-[#1b6f7c]">[{source.id}] View graph and question context</summary>
+                          {source.visuals?.map((visual) => <figure key={visual.caption} className="mt-2">
+                            <figcaption className="font-semibold">{visual.caption}</figcaption>
+                            <p className="my-2 leading-5">{visual.description}</p>
+                            <a href={sourcePath(visual.fileName)} target="_blank" rel="noreferrer" aria-label={`Open source image: ${visual.caption}`}><img src={sourcePath(visual.fileName)} alt={`${visual.caption}. Inputs are transcribed above.`} loading="lazy" className="h-auto w-full" /></a>
+                          </figure>)}
+                        </details>}
+                        </div>
                       ))}
                     </div>
                   )}

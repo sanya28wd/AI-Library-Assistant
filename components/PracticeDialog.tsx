@@ -1,3 +1,5 @@
+import { QuestionVisualContext } from "@/components/QuestionVisualContext";
+import { StudyNudges } from "@/components/StudyNudges";
 import { Question } from "@/lib/types";
 
 export function PracticeDialog({ questions, onClose }: { questions: Question[]; onClose: () => void }) {
@@ -16,6 +18,8 @@ export function PracticeDialog({ questions, onClose }: { questions: Question[]; 
               {question.options
                 ? <div className="mt-3 grid gap-2">{question.options.map((option) => <button key={option} className="rounded-[3px] border border-[#dcdcdc] px-3 py-2 text-left text-[14px] hover:border-[#2b2f6b]">{option}</button>)}</div>
                 : <textarea className="mt-3 h-24 w-full rounded-[3px] border border-[#dcdcdc] p-3 text-[14px] outline-none focus:border-[#2b2f6b]" placeholder="Write your response here (not saved)" />}
+              <QuestionVisualContext question={question} />
+              <StudyNudges question={question} />
             </div>
           ))}
         </div>

@@ -45,6 +45,16 @@ export type Material = {
   sections?: PaperSection[];
 };
 
+export type QuestionVisual = {
+  /** Physical PDF page, not the page number printed on the exam. */
+  page: number;
+  /** Original page render under public/materials; never a reconstructed diagram. */
+  fileName: string;
+  caption: string;
+  /** Source-checked transcription of diagram inputs, without a worked solution. */
+  description: string;
+};
+
 export type Question = {
   id: string;
   text: string;
@@ -55,6 +65,7 @@ export type Question = {
   page: number;
   answer?: string;
   verifiedAnswer: boolean;
+  visuals?: QuestionVisual[];
 };
 
 export type NoticePreview = {
@@ -64,6 +75,6 @@ export type NoticePreview = {
   persisted: false;
 };
 
-export type ChatSource = { id: number; label: string; page: number | null; href: string; excerpt: string };
+export type ChatSource = { id: number; label: string; page: number | null; href: string; excerpt: string; visuals?: QuestionVisual[] };
 export type ChatMessage = { role: "user" | "assistant"; content: string };
 export type ChatResponse = { answer: string; sources: ChatSource[]; mode: "ai" | "sources-only" };

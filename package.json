@@ -6,7 +6,9 @@
     "dev": "node node_modules/next/dist/bin/next dev",
     "build": "node node_modules/next/dist/bin/next build",
     "start": "node node_modules/next/dist/bin/next start",
-    "ingest": "node --import tsx scripts/ingest-materials.ts"
+    "ingest": "node --import tsx scripts/ingest-materials.ts",
+    "check:retrieval": "node --import tsx scripts/check-retrieval.ts",
+    "check:visual-context": "node --import tsx scripts/check-visual-context.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.1",
@@ -26,6 +28,7 @@
     "@types/pdf-parse": "^1.1.4",
     "@types/react": "^19.0.3",
     "@types/react-dom": "^19.0.2",
+    "agent-browser": "0.26.0",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.17",
