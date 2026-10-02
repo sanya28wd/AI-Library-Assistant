@@ -165,7 +165,7 @@ The local pilot implements `lib/question-search.ts` as a shared pure lexical/top
 
 Run the bounded smoke check against a running local app with `npm run check:retrieval -- http://127.0.0.1:3000`. It checks six expected leading results (including reordered terms, possessives, abbreviations and an answer-option name), live client/API parity, exact filtered enumeration, no-match behavior, input immutability, and nudge structure. Comparing whole answer-key strings is only a mechanical guard against copying, not a semantic answer-leakage test. This is a regression check, not the held-out benchmark proposed above.
 
-Local acceptance evidence: TypeScript validation, `npm run build`, and the six-case smoke check against the production server passed. Agent-browser verified LCS search, the first/next-nudge interaction and attempt-update gate, practice-panel availability, and expansion at a 390-pixel mobile viewport with no horizontal document overflow. These checks establish bounded UI/API behavior; they do not establish full-corpus recall, instructor approval, semantic leakage resistance, or learning improvement. Changes are committed locally and have not been pushed or deployed.
+Local acceptance evidence: TypeScript validation, `npm run build`, and the six-case smoke check against the production server passed. Agent-browser verified LCS search, the first/next-nudge interaction and attempt-update gate, practice-panel availability, and expansion at a 390-pixel mobile viewport with no horizontal document overflow. These checks establish bounded UI/API behavior; they do not establish full-corpus recall, instructor approval, semantic leakage resistance, or learning improvement.
 
 ## Image retrieval: the DAA graph scenario
 
