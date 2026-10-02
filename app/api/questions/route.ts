@@ -1,20 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
-import { assessmentOf, materialForId, questions, topicForId } from "@/lib/seed";
+import { assessmentTypes, courseForId, materialForId, questions } from "@/lib/seed";
+import { searchQuestions } from "@/lib/question-search";
 import { AssessmentType } from "@/lib/types";
 
 export function GET(request: NextRequest): NextResponse {
   const params = request.nextUrl.searchParams;
   const courseId = params.get("course");
   const topicIds = params.getAll("topic");
-  const assessmentTypes = params.getAll("assessment") as AssessmentType[];
+  const requestedAssessments = params.getAll("assessment");
+  if (requestedAssessments.some((value) => !assessmentTypes.includes(value as AssessmentType))) {
+    return NextResponse.json({ error: "Unknown assessment type." }, { status: 400 });
+  }
+  if (courseId && !courseForId(courseId)?.available) return NextResponse.json({ error: "Unknown course." }, { status: 404 });
+  const selectedAssessments = requestedAssessments as AssessmentType[];
   const text = (params.get("q") ?? "").toLowerCase().trim();
-  const matches = questions.filter((question) => {
-    const assessment = assessmentOf(question);
-    const courseMatch = !courseId || materialForId(question.materialId)?.courseId === courseId;
-    const topicMatch = topicIds.length === 0 || topicIds.some((id) => question.topicIds.includes(id));
-    const assessmentMatch = assessmentTypes.length === 0 || (assessment !== null && assessmentTypes.includes(assessment));
-    const content = `${question.text} ${question.topicIds.map((id) => topicForId(id)?.name ?? "").join(" ")}`.toLowerCase();
-    return courseMatch && topicMatch && assessmentMatch && (!text || content.includes(text));
-  });
+  const bank = questions.filter((question) => !courseId || materialForId(question.materialId)?.courseId === courseId);
+  const matches = searchQuestions(bank, text, topicIds, selectedAssessments);
   return NextResponse.json({ data: matches });
 }

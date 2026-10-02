@@ -7,7 +7,8 @@ import { useSearchParams } from "next/navigation";
 import { ArrowLeft, Search } from "lucide-react";
 import { PracticeDialog } from "@/components/PracticeDialog";
 import { QuestionCard } from "@/components/QuestionCard";
-import { assessmentOf, assessmentTypesForCourse, questionsForCourse, topicForId, topicsForCourse } from "@/lib/seed";
+import { assessmentTypesForCourse, questionsForCourse, topicForId, topicsForCourse } from "@/lib/seed";
+import { searchQuestions } from "@/lib/question-search";
 import { AssessmentType, Course } from "@/lib/types";
 
 export function QuestionSearch({ course }: { course: Course }) {
@@ -21,16 +22,7 @@ export function QuestionSearch({ course }: { course: Course }) {
   const [practiceCount, setPracticeCount] = useState(5);
   const [practiceMode, setPracticeMode] = useState(false);
 
-  const results = useMemo(() => {
-    const search = query.toLowerCase().trim();
-    return questions.filter((question) => {
-      const assessment = assessmentOf(question);
-      const matchesTopics = selectedTopics.length === 0 || selectedTopics.some((id) => question.topicIds.includes(id));
-      const matchesAssessment = selectedAssessments.length === 0 || (assessment !== null && selectedAssessments.includes(assessment));
-      const searchable = `${question.text} ${question.topicIds.map((id) => topicForId(id)?.name ?? "").join(" ")}`.toLowerCase();
-      return matchesTopics && matchesAssessment && (!search || searchable.includes(search));
-    });
-  }, [query, questions, selectedAssessments, selectedTopics]);
+  const results = useMemo(() => searchQuestions(questions, query, selectedTopics, selectedAssessments), [query, questions, selectedAssessments, selectedTopics]);
 
   function toggleTopic(id: string): void {
     setSelectedTopics((current) => current.includes(id) ? current.filter((item) => item !== id) : [...current, id]);
@@ -47,7 +39,7 @@ export function QuestionSearch({ course }: { course: Course }) {
       <section className="rounded-[3px] border border-[#ececec] bg-white p-4 shadow-[0_1px_4px_rgba(0,0,0,0.08)]">
         <div className="relative">
           <Search className="absolute left-3 top-2.5 text-[#999]" size={18} />
-          <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search a concept, name, or question…" className="w-full rounded-[3px] border border-[#cfcfcf] py-2 pl-10 pr-3 text-[14px] outline-none focus:border-[#2b2f6b]" />
+          <input value={query} onChange={(event) => setQuery(event.target.value)} aria-label="Search curated questions" placeholder="Search a concept, name, or question…" className="w-full rounded-[3px] border border-[#cfcfcf] py-2 pl-10 pr-3 text-[14px] outline-none focus:border-[#2b2f6b]" />
         </div>
         <p className="mt-4 text-[13px] font-semibold">Topics</p>
         <div className="mt-2 flex flex-wrap gap-2">
@@ -61,16 +53,18 @@ export function QuestionSearch({ course }: { course: Course }) {
       </section>
 
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-[14px]"><span className="font-semibold">{results.length}</span> reviewed {results.length === 1 ? "question" : "questions"}</p>
+        <p className="text-[14px]"><span className="font-semibold">{results.length}</span> curated {results.length === 1 ? "question" : "questions"}</p>
         <div className="flex items-center gap-2 text-[13px]">
           <select value={practiceCount} onChange={(event) => setPracticeCount(Number(event.target.value))} className="rounded-[3px] border border-[#cfcfcf] bg-white px-2 py-1.5"><option value={3}>3 questions</option><option value={5}>5 questions</option><option value={10}>10 questions</option></select>
           <button onClick={() => setPracticeMode(true)} disabled={results.length === 0} className="rounded-[3px] bg-[#2b2f6b] px-3 py-1.5 font-semibold text-white disabled:opacity-50">Practice</button>
         </div>
       </div>
 
+      <p className="text-[12px] text-[#666]">Search covers the curated question bank, including topic keywords and answer options. It does not yet include every question in the source papers.</p>
+
       <div className="space-y-3">
         {results.map((question) => <QuestionCard key={question.id} question={question} />)}
-        {results.length === 0 && <div className="rounded-[3px] border border-dashed border-[#cfcfcf] p-10 text-center text-[14px] text-[#666]">No reviewed questions match these filters. Try another topic or clear the exam type.</div>}
+        {results.length === 0 && <div className="rounded-[3px] border border-dashed border-[#cfcfcf] p-10 text-center text-[14px] text-[#666]">No curated questions match these filters. Try another topic or clear the exam type.</div>}
       </div>
 
       {practiceMode && <PracticeDialog questions={results.slice(0, practiceCount)} onClose={() => setPracticeMode(false)} />}
