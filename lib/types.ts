@@ -75,6 +75,6 @@ export type NoticePreview = {
   persisted: false;
 };
 
-export type ChatSource = { id: number; label: string; page: number | null; href: string; excerpt: string };
+export type ChatSource = { id: number; label: string; page: number | null; href: string; excerpt: string; visuals?: QuestionVisual[] };
 export type ChatMessage = { role: "user" | "assistant"; content: string };
 export type ChatResponse = { answer: string; sources: ChatSource[]; mode: "ai" | "sources-only" };

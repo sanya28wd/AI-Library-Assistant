@@ -13,6 +13,7 @@ function instructions(courseLabel: string, sources: ChatSource[]): string {
 Rules:
 - Ground your answer in the numbered course sources below and cite them inline as [1], [2] right after the claim they support.
 - Past papers often contain only the question, not its explanation. If your answer explains anything the sources do not state, it MUST begin with the exact line "General explanation (not from your course material):" followed by that explanation without citations. Then add a line starting "In your past papers:" that lists which sources examine the topic and how, with citations, e.g. "Test 2 asked you to trace it with the near array [4]."
+- Diagram transcriptions are question inputs, not worked solutions. Use the question number and caption to distinguish graphs on the same page. Do not infer missing edges, directions or weights from OCR fragments.
 - If the sources are unrelated to the question, say so plainly and suggest which course topic or paper to look at.
 - Formatting: plain text with short paragraphs and "- " bullet lists. You may use **bold** for a few key terms. Write maths in LaTeX, inline as \\( T(n) = \\Theta(n^2) \\) and displayed as \\[ ... \\]. No headings, tables or code blocks.
 - When a source is an answer key, you may use it, but encourage the student to attempt the question first.

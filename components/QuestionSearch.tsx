@@ -60,7 +60,7 @@ export function QuestionSearch({ course }: { course: Course }) {
         </div>
       </div>
 
-      <p className="text-[12px] text-[#666]">Search covers the curated question bank, including topic keywords and answer options. It does not yet include every question in the source papers.</p>
+      <p className="text-[12px] text-[#666]">Search covers the curated question bank, including topic keywords, answer options and linked diagram transcriptions. It does not yet include every question in the source papers.</p>
 
       <div className="space-y-3">
         {results.map((question) => <QuestionCard key={question.id} question={question} />)}

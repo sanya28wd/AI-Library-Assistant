@@ -26,7 +26,7 @@ export function searchQuestions(bank: Question[], query: string, topicIds: strin
     return (topicIds.length === 0 || topicIds.some((id) => question.topicIds.includes(id)))
       && (assessments.length === 0 || (assessment !== null && assessments.includes(assessment)));
   }).map((question) => {
-    const text = normalizeSearch([question.text, ...(question.options ?? [])].join(" "));
+    const text = normalizeSearch([question.text, ...(question.options ?? []), ...(question.visuals ?? []).map((visual) => `${visual.caption} ${visual.description}`)].join(" "));
     const textTerms = new Set(searchTerms(text));
     const topicText = searchTerms(question.topicIds.map((id) => {
       const topic = topicForId(id);
@@ -36,7 +36,7 @@ export function searchQuestions(bank: Question[], query: string, topicIds: strin
     const textHits = terms.filter((term) => textTerms.has(term)).length;
     const allTermsMatch = terms.length > 0 && terms.every((term) => textTerms.has(term) || topicTerms.has(term));
     const aliasMatch = question.topicIds.some((id) => matchedTopics.includes(id));
-    const phraseMatch = normalized.length > 0 && text.includes(normalized);
+    const phraseMatch = normalized.length > 0 && ` ${text} `.includes(` ${normalized} `);
     const score = (phraseMatch ? 100 : 0) + textHits * 5 + (allTermsMatch ? 3 : 0) + (aliasMatch ? 1 : 0);
     return { question, score, matches: normalized.length === 0 || allTermsMatch || aliasMatch || phraseMatch };
   }).filter((result) => result.matches).sort((a, b) => b.score - a.score).map((result) => result.question);
