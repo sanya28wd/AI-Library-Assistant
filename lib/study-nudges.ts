@@ -16,8 +16,18 @@ const authoredNudges: Record<string, readonly string[]> = {
     "What should a table entry for two prefixes represent? Separate the cases where their last characters match and differ.",
     "Check your boundary cases, then trace a small table by hand. How will you reconstruct a sequence without assuming it is unique?"
   ],
+  "d-10": [
+    "Look at the lower diagram for Question 2. Which arrows go in each direction, and which vertex pairs have no direct arc?",
+    "What should an initial cost-matrix entry mean? Distinguish a direct edge cost from a shortest-path cost before allowing intermediate vertices.",
+    "Choose one vertex pair and one permitted intermediate vertex. Compare the route you already know with a route through that vertex, then explain your choice."
+  ],
+  "d-15": [
+    "Inspect Question 4 and separate edge capacity from the amount of flow you choose to push. Which node is the source and which is the sink?",
+    "Mark the two sides of the given cut. Which arrows leave A for B, and which stay on one side? Justify what belongs in your sum.",
+    "Trace the specified path before choosing how much flow to push. How must the forward and reverse residual capacities change after that choice?"
+  ],
   "d-9": [
-    "Open the source page to see the graph. At an intermediate step, which vertices are already in your tree?",
+    "Use the graph and source context panel to inspect the input. At an intermediate step, which vertices are already in your tree?",
     "Compare edges crossing from your current tree to vertices outside it. What must stay true after each choice?",
     "Trace your arrays after one step before continuing. At the end, check connectivity and the number of edges before adding the weights."
   ]
