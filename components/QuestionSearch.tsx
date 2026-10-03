@@ -1,14 +1,15 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import type { Route } from "next";
 import { useSearchParams } from "next/navigation";
-import { ArrowLeft, Search } from "lucide-react";
+import { ArrowLeft, Loader2, Search } from "lucide-react";
 import { PracticeDialog } from "@/components/PracticeDialog";
 import { QuestionCard } from "@/components/QuestionCard";
 import { assessmentTypesForCourse, campuses, materialForId, questionsForCourse, topicForId, topicsForCourse } from "@/lib/seed";
 import { searchQuestions } from "@/lib/question-search";
+import { staticDemo } from "@/lib/site";
 import { AssessmentType, Course, Question } from "@/lib/types";
 
 export function QuestionSearch({ course }: { course: Course }) {
@@ -25,6 +26,39 @@ export function QuestionSearch({ course }: { course: Course }) {
   const [practiceSet, setPracticeSet] = useState<Question[] | null>(null);
 
   const results = useMemo(() => searchQuestions(questions, query, selectedTopics, selectedAssessments, selectedCampuses), [query, questions, selectedAssessments, selectedCampuses, selectedTopics]);
+
+  // Meaning matches come from the server (query embeddings need the API key), after a pause in typing.
+  const [related, setRelated] = useState<Question[]>([]);
+  const [relatedLoading, setRelatedLoading] = useState(false);
+  const resultIds = results.map((question) => question.id).join(",");
+  useEffect(() => {
+    if (staticDemo || !query.trim()) {
+      setRelated([]);
+      setRelatedLoading(false);
+      return;
+    }
+    const controller = new AbortController();
+    setRelatedLoading(true);
+    const timer = setTimeout(async () => {
+      const search = new URLSearchParams({ course: course.id, q: query });
+      selectedTopics.forEach((id) => search.append("topic", id));
+      selectedAssessments.forEach((type) => search.append("assessment", type));
+      selectedCampuses.forEach((campus) => search.append("campus", campus));
+      resultIds.split(",").filter(Boolean).forEach((id) => search.append("exclude", id));
+      try {
+        const response = await fetch(`/api/questions/related?${search}`, { signal: controller.signal });
+        setRelated(response.ok ? (await response.json() as { data: Question[] }).data : []);
+      } catch {
+        if (!controller.signal.aborted) setRelated([]);
+      } finally {
+        if (!controller.signal.aborted) setRelatedLoading(false);
+      }
+    }, 450);
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [course.id, query, resultIds, selectedAssessments, selectedCampuses, selectedTopics]);
 
   // A fresh random sample of the current results each time, so repeated practice isn't always the top N.
   function startPractice(): void {
@@ -86,8 +120,18 @@ export function QuestionSearch({ course }: { course: Course }) {
 
       <div className="space-y-3">
         {results.map((question) => <QuestionCard key={question.id} question={question} />)}
-        {results.length === 0 && <div className="rounded-[3px] border border-dashed border-[#cfcfcf] p-10 text-center text-[14px] text-[#666]">No curated questions match these filters. Try another topic or clear the exam type.</div>}
+        {results.length === 0 && <div className="rounded-[3px] border border-dashed border-[#cfcfcf] p-10 text-center text-[14px] text-[#666]">{query.trim() && (relatedLoading || related.length > 0) ? "No questions use these exact words. Questions about the same idea are shown below." : "No curated questions match these filters. Try another topic or clear the exam type."}</div>}
       </div>
+
+      {query.trim() && (relatedLoading || related.length > 0) && (
+        <section aria-label="Related by meaning" className="space-y-3">
+          <div className="border-t border-[#e3e3e3] pt-4">
+            <h3 className="flex items-center gap-2 text-[15px] font-semibold">Related by meaning {relatedLoading && <Loader2 size={14} className="animate-spin text-[#666]" />}</h3>
+            <p className="mt-0.5 text-[12px] text-[#666]">These questions don't use your exact words but cover the same idea.</p>
+          </div>
+          {related.map((question) => <QuestionCard key={question.id} question={question} />)}
+        </section>
+      )}
 
       {practiceSet && <PracticeDialog questions={practiceSet} onClose={() => setPracticeSet(null)} />}
     </div>

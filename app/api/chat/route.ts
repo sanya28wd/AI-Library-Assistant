@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateAnswer } from "@/lib/openai";
-import { retrieve } from "@/lib/retrieval";
+import { hybridRetrieve } from "@/lib/retrieval";
 import { courseForId } from "@/lib/seed";
 import { ChatMessage, ChatResponse, ChatSource } from "@/lib/types";
 
@@ -37,7 +37,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   if (userTurns.length === 0) return NextResponse.json({ error: "Ask a question first." }, { status: 400 });
 
   // Include the previous question so follow-ups like "explain that more simply" still retrieve the right passages.
-  const sources = retrieve(userTurns.slice(-2).map((message) => message.content).join(" "), course.id);
+  const sources = await hybridRetrieve(userTurns.slice(-2).map((message) => message.content).join(" "), course.id);
 
   if (!process.env.OPENAI_API_KEY) {
     const answer = sources.length > 0

@@ -1,5 +1,6 @@
 import { readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
+import { cosine, embedQuery, storedVectors, textKey } from "@/lib/embeddings";
 import { courseForId, examLabel, materials, questions, sourcePath } from "@/lib/seed";
 import { ChatSource, Material, QuestionVisual } from "@/lib/types";
 
@@ -11,6 +12,9 @@ const stopwords = new Set("the and for are but not you all any can had her was o
 
 // Notices are student-specific and never part of the answerable corpus.
 const answerableKinds = new Set(["paper", "answer-key", "handout"]);
+
+// Words from the exam header printed on every page; they say nothing about a passage's content.
+const headerWords = new Set("bits pilani dubai campus hyderabad goa birla institute technology science international academic city department division".split(" "));
 
 // Two-letter course terms worth keeping; other short tokens are mostly noise.
 const shortTerms = new Set(["dp", "np", "em", "ai", "ml", "pc", "qp", "rl", "nn", "lp"]);
@@ -24,7 +28,7 @@ function singular(word: string): string {
 }
 
 function tokenize(text: string): string[] {
-  return text.toLowerCase().replace(/[’']/g, "").split(/[^a-z0-9]+/).filter((word) => (word.length > 2 || shortTerms.has(word)) && !stopwords.has(word)).map(singular);
+  return text.toLowerCase().replace(/[’']/g, "").split(/[^a-z0-9]+/).filter((word) => (word.length > 2 || shortTerms.has(word)) && !stopwords.has(word) && !headerWords.has(word)).map(singular);
 }
 
 function chunk(text: string, size = 900): string[] {
@@ -123,16 +127,30 @@ function expandAbbreviations(query: string): string {
   });
 }
 
-// BM25 over one course's ingested material; small enough to score in memory on every request.
-export function retrieve(query: string, courseId: string, limit = 6): ChatSource[] {
-  const index = currentIndex().filter((passage) => passage.material.courseId === courseId);
+function toSources(passages: Passage[]): ChatSource[] {
+  return passages.map((passage, position) => ({
+    id: position + 1,
+    label: label(passage.material, passage.page),
+    page: passage.page,
+    href: `${sourcePath(passage.material.fileName)}${passage.page ? `#page=${passage.page}` : ""}`,
+    excerpt: passage.text,
+    ...(passage.visuals.length > 0 && { visuals: passage.visuals })
+  }));
+}
+
+function coursePassages(courseId: string): Passage[] {
+  return currentIndex().filter((passage) => passage.material.courseId === courseId);
+}
+
+// BM25 over one course's passages; small enough to score in memory on every request.
+function rankByKeywords(query: string, index: Passage[], limit: number): Passage[] {
   const queryTokens = tokenize(expandAbbreviations(query));
   const queryTerms = [...new Set(queryTokens)];
   const phrases = queryTokens.slice(1).map((token, position) => ` ${queryTokens[position]} ${token} `);
   if (index.length === 0 || queryTerms.length === 0) return [];
   const averageLength = index.reduce((sum, passage) => sum + passage.length, 0) / index.length;
   const documentFrequency = new Map(queryTerms.map((term) => [term, index.filter((passage) => passage.terms.has(term)).length]));
-  const scored = index.map((passage) => {
+  return index.map((passage) => {
     let score = 0;
     for (const term of queryTerms) {
       const frequency = passage.terms.get(term) ?? 0;
@@ -144,16 +162,55 @@ export function retrieve(query: string, courseId: string, limit = 6): ChatSource
     // Titles and names ("theory justice", "surplus value") should beat passages that only share the separate words.
     if (score > 0) score += phrases.filter((phrase) => passage.sequence.includes(phrase)).length * 2;
     return { passage, score };
-  }).filter((item) => item.score > 0).sort((a, b) => b.score - a.score).slice(0, limit);
+  }).filter((item) => item.score > 0).sort((a, b) => b.score - a.score).slice(0, limit).map((item) => item.passage);
+}
 
-  return scored.map(({ passage }, position) => ({
-    id: position + 1,
-    label: label(passage.material, passage.page),
-    page: passage.page,
-    href: `${sourcePath(passage.material.fileName)}${passage.page ? `#page=${passage.page}` : ""}`,
-    excerpt: passage.text,
-    ...(passage.visuals.length > 0 && { visuals: passage.visuals })
-  }));
+/** Keyword-only retrieval (BM25). Synchronous and needs no API key. */
+export function retrieve(query: string, courseId: string, limit = 6): ChatSource[] {
+  return toSources(rankByKeywords(query, coursePassages(courseId), limit));
+}
+
+// Below this cosine similarity a passage is not treated as a meaning match, so unrelated questions still find nothing.
+export const minimumSimilarity = 0.3;
+// Below this a keyword hit is only weakly related in meaning to the question.
+const keywordVetoSimilarity = 0.25;
+
+function rankByMeaning(vector: Float32Array, index: Passage[], limit: number): Passage[] {
+  const vectors = storedVectors();
+  return index.flatMap((passage) => {
+    const stored = vectors.get(textKey(passage.text));
+    const similarity = stored ? cosine(vector, stored) : -1;
+    return similarity >= minimumSimilarity ? [{ passage, similarity }] : [];
+  }).sort((a, b) => b.similarity - a.similarity).slice(0, limit).map((item) => item.passage);
+}
+
+/**
+ * Hybrid retrieval: BM25 keyword matches fused with embedding (meaning) matches by reciprocal rank fusion.
+ * Falls back to keywords alone when there is no API key or `npm run embed` has not been run.
+ */
+export async function hybridRetrieve(query: string, courseId: string, limit = 6): Promise<ChatSource[]> {
+  const index = coursePassages(courseId);
+  const keyword = rankByKeywords(query, index, 30);
+  const vector = await embedQuery(expandAbbreviations(query));
+  if (!vector) return toSources(keyword.slice(0, limit));
+  const meaning = rankByMeaning(vector, index, 30);
+  // Keyword hits that share only incidental words ("best", "place") with the question are dropped when they are unrelated in meaning.
+  const vectors = storedVectors();
+  const relevantKeyword = keyword.filter((passage) => {
+    const stored = vectors.get(textKey(passage.text));
+    return !stored || cosine(vector, stored) >= keywordVetoSimilarity;
+  });
+  // RRF uses rank positions only, so BM25 scores and cosine similarities never need to be put on one scale.
+  const fused = new Map<Passage, number>();
+  for (const ranking of [relevantKeyword, meaning]) {
+    ranking.forEach((passage, rank) => fused.set(passage, (fused.get(passage) ?? 0) + 1 / (60 + rank + 1)));
+  }
+  return toSources([...fused.entries()].sort((a, b) => b[1] - a[1]).slice(0, limit).map(([passage]) => passage));
+}
+
+/** Every passage text in the index, for `npm run embed`. */
+export function passageTexts(): string[] {
+  return [...new Set(currentIndex().map((passage) => passage.text))];
 }
 
 /** The full extracted text of one paper page, so an explanation always sees the question's own data and tables. */

@@ -147,6 +147,14 @@ OPENAI_API_KEY=your_key_here
 
 Keys are excluded from Git through `.gitignore`.
 
+### Meaning search (embeddings)
+
+Retrieval is hybrid: BM25 keyword matching plus meaning matching with OpenAI embeddings (`text-embedding-3-small`, 512 dimensions), combined by reciprocal rank fusion. The study assistant and AI explanations use it for passages, and the question search page adds a *Related by meaning* section for questions that cover the same idea in different words.
+
+After `npm run ingest`, run `npm run embed` (needs `OPENAI_API_KEY` in `.env.local`). It writes a short plain-language profile for each curated question (`data/question-profiles.json`) and embeds every passage and question into `data/embeddings.json`. Only new or changed texts are sent, so re-runs are quick and cheap. Without the file or a key, the site falls back to keyword search.
+
+`npm run check:semantic` compares keyword-only and hybrid retrieval on paraphrased questions that avoid the papers' own wording.
+
 ### Static demo on GitHub Pages
 
 Every push to `main` runs `.github/workflows/deploy-pages.yml`, which builds a static export (`GITHUB_PAGES=true npm run build`) and publishes it to https://sanya28wd.github.io/AI-Library-Assistant/. GitHub Pages cannot run API routes, so the static demo leaves out the study chatbot, notice file upload and AI explanations; pasted notice text is still matched in the browser. Run the app locally for the full version.

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateAnswer } from "@/lib/openai";
-import { pageSource, retrieve } from "@/lib/retrieval";
+import { hybridRetrieve, pageSource } from "@/lib/retrieval";
 import { courseForId, materialForId, questions, topicForId } from "@/lib/seed";
 import { ChatSource, ExplanationResponse } from "@/lib/types";
 
@@ -32,7 +32,7 @@ export async function POST(_: NextRequest, { params }: { params: Promise<{ id: s
 
   // The question's own page first, then related passages from elsewhere in the course.
   const own = pageSource(material.id, question.page);
-  const related = retrieve(`${question.text} ${question.topicIds.map((topicId) => topicForId(topicId)?.name ?? "").join(" ")}`, course.id, 6)
+  const related = (await hybridRetrieve(`${question.text} ${question.topicIds.map((topicId) => topicForId(topicId)?.name ?? "").join(" ")}`, course.id, 6))
     .filter((source) => !(own && source.href === own.href))
     .slice(0, own ? 4 : 5);
   const sources = [own, ...related].filter((source): source is ChatSource => source !== null).map((source, index) => ({ ...source, id: index + 1 }));

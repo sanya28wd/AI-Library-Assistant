@@ -7,8 +7,10 @@
     "build": "node node_modules/next/dist/bin/next build",
     "start": "node node_modules/next/dist/bin/next start",
     "ingest": "node --import tsx scripts/ingest-materials.ts",
+    "embed": "node --env-file=.env.local --import tsx scripts/embed-materials.ts",
     "check:retrieval": "node --import tsx scripts/check-retrieval.ts",
-    "check:visual-context": "node --import tsx scripts/check-visual-context.ts"
+    "check:visual-context": "node --import tsx scripts/check-visual-context.ts",
+    "check:semantic": "node --env-file=.env.local --import tsx scripts/check-semantic.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.1",
