@@ -1,4 +1,4 @@
-import { assessmentOf, topicForId, topics } from "@/lib/seed";
+import { assessmentOf, materialForId, topicForId, topics } from "@/lib/seed";
 import { AssessmentType, Question } from "@/lib/types";
 
 const searchStopwords = new Set("a an the and or of to in on for with is are was were what which how explain find show give me question questions about past paper papers please".split(" "));
@@ -13,7 +13,7 @@ function searchTerms(text: string): string[] {
 
 /** Return every matching curated question; text ranks before topic aliases. */
 // ponytail: lexical ranking cannot understand unseen paraphrases; benchmark hybrid retrieval when aliases fall short.
-export function searchQuestions(bank: Question[], query: string, topicIds: string[], assessments: AssessmentType[]): Question[] {
+export function searchQuestions(bank: Question[], query: string, topicIds: string[], assessments: AssessmentType[], campusFilter: string[] = []): Question[] {
   const normalized = normalizeSearch(query);
   const terms = searchTerms(query);
   const matchedTopics = topics.filter((topic) => [topic.name, ...topic.keywords].some((alias) => {
@@ -24,7 +24,8 @@ export function searchQuestions(bank: Question[], query: string, topicIds: strin
   return bank.filter((question) => {
     const assessment = assessmentOf(question);
     return (topicIds.length === 0 || topicIds.some((id) => question.topicIds.includes(id)))
-      && (assessments.length === 0 || (assessment !== null && assessments.includes(assessment)));
+      && (assessments.length === 0 || (assessment !== null && assessments.includes(assessment)))
+      && (campusFilter.length === 0 || campusFilter.includes(materialForId(question.materialId)?.campus ?? ""));
   }).map((question) => {
     const text = normalizeSearch([question.text, ...(question.options ?? []), ...(question.visuals ?? []).map((visual) => `${visual.caption} ${visual.description}`)].join(" "));
     const textTerms = new Set(searchTerms(text));

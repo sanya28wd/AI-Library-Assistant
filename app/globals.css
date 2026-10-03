@@ -7,3 +7,4 @@
 body { margin: 0; background: #ffffff; }
 button, input, select, textarea { font: inherit; }
 button { cursor: pointer; }
+html { scroll-behavior: smooth; }

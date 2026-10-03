@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { generateAnswer } from "@/lib/openai";
 import { retrieve } from "@/lib/retrieval";
 import { courseForId } from "@/lib/seed";
 import { ChatMessage, ChatResponse, ChatSource } from "@/lib/types";
@@ -45,17 +46,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ answer, sources, mode: "sources-only" } satisfies ChatResponse);
   }
 
-  const response = await fetch("https://api.openai.com/v1/responses", {
-    method: "POST",
-    headers: {
-      "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ model: "gpt-4.1-mini", instructions: instructions(`${course.code} ${course.name}`, sources), input: messages })
-  });
-  if (!response.ok) return NextResponse.json({ error: "The study assistant is unavailable right now." }, { status: 502 });
-  const payload = await response.json() as { output_text?: string; output?: { content?: { type: string; text?: string }[] }[] };
-  // output_text is an SDK convenience; the raw REST payload carries the text inside output[].content[].
-  const answer = payload.output_text ?? payload.output?.flatMap((item) => item.content ?? []).filter((part) => part.type === "output_text").map((part) => part.text ?? "").join("") ?? "";
+  let answer: string | null;
+  try {
+    answer = await generateAnswer(instructions(`${course.code} ${course.name}`, sources), messages);
+  } catch {
+    return NextResponse.json({ error: "The study assistant is unavailable right now." }, { status: 502 });
+  }
   return NextResponse.json({ answer: answer || "No answer was returned.", sources, mode: "ai" } satisfies ChatResponse);
 }

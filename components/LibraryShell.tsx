@@ -6,7 +6,9 @@ import { Course } from "@/lib/types";
 
 const navItems = ["Home", "About Us", "Services", "E-Resources", "Space Booking", "All Campuses"];
 
-export function LibraryShell({ children, chatCourse }: { children: React.ReactNode; chatCourse?: Course }) {
+// "overlay" lays a transparent white header over the first section, like the library homepage hero.
+export function LibraryShell({ children, chatCourse, variant = "default" }: { children: React.ReactNode; chatCourse?: Course; variant?: "default" | "overlay" }) {
+  const overlay = variant === "overlay";
   return (
     <div className="min-h-screen bg-white text-[#1f2328]">
       {staticDemo && <p className="bg-[#fff4d6] px-4 py-1.5 text-center text-[12px] text-[#5c4400] sm:px-6">Student prototype for the BITS Pilani library, not the official library website. Static demo: the chatbot and notice file upload need the full version.</p>}
@@ -15,14 +17,15 @@ export function LibraryShell({ children, chatCourse }: { children: React.ReactNo
         <p className="hidden sm:block"><span className="font-semibold">Saturday:</span> 09:00 AM - 06:00 AM <span className="mx-1 text-slate-400">|</span> <span className="font-semibold">Sunday:</span> 09:00 AM - 06:00 AM <span className="mx-1 text-slate-400">|</span> <span className="font-semibold">Monday:</span> 09:00 AM - 06:00 AM</p>
       </div>
 
-      <header className="border-b border-[#d0d0d0] bg-white">
-        <div className="flex items-center justify-between gap-4 px-4 py-3 sm:px-8">
+      <div className={overlay ? "relative" : undefined}>
+      <header className={overlay ? "absolute inset-x-0 top-0 z-20 text-white" : "border-b border-[#d0d0d0] bg-white"}>
+        <div className={`flex items-center justify-between gap-4 px-4 py-3 sm:px-8 ${overlay ? "mx-4 border-b border-white/60 sm:mx-8 sm:px-0" : ""}`}>
           <Link href="/" className="flex items-center gap-3">
-            <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full border-2 border-[#2b2f6b] text-[#2b2f6b]"><BookOpen size={22} /></span>
+            <span className={`grid h-12 w-12 shrink-0 place-items-center rounded-full border-2 ${overlay ? "border-white" : "border-[#2b2f6b] text-[#2b2f6b]"}`}><BookOpen size={22} /></span>
             <span className="text-[12px] leading-[17px]"><span className="block text-[13px] font-semibold">BITS Pilani</span>Dubai Campus<br />Library</span>
           </Link>
           <nav className="hidden items-center gap-7 text-[14px] font-semibold lg:flex">
-            {navItems.map((item) => item === "Home" ? <Link key={item} href="/" className="hover:text-[#2b2f6b]">{item}</Link> : <a key={item} href="#" className="hover:text-[#2b2f6b]">{item}</a>)}
+            {navItems.map((item) => item === "Home" ? <Link key={item} href="/" className={overlay ? "underline underline-offset-4" : "hover:text-[#2b2f6b]"}>{item}</Link> : <a key={item} href="#" className={overlay ? "hover:underline hover:underline-offset-4" : "hover:text-[#2b2f6b]"}>{item}</a>)}
           </nav>
           <div className="flex items-center gap-3 text-[14px]">
             <span className="hidden sm:inline">Welcome STUDENT</span>
@@ -32,6 +35,7 @@ export function LibraryShell({ children, chatCourse }: { children: React.ReactNo
       </header>
 
       {children}
+      </div>
 
       {chatCourse && <ChatWidget course={chatCourse} />}
     </div>

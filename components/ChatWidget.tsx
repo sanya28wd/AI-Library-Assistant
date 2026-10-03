@@ -1,45 +1,13 @@
 "use client";
 
-import { FormEvent, Fragment, useEffect, useRef, useState } from "react";
-import katex from "katex";
-import "katex/dist/katex.min.css";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { FileText, Loader2, MessageCircle, Send, X } from "lucide-react";
+import { RichAnswer } from "@/components/RichAnswer";
 import { chatSuggestions, sourcePath } from "@/lib/seed";
 import { staticDemo } from "@/lib/site";
 import { ChatMessage, ChatResponse, ChatSource, Course } from "@/lib/types";
 
 type Turn = ChatMessage & { sources?: ChatSource[]; mode?: ChatResponse["mode"] };
-
-// Turns "[2]" in an answer into a link to that source's page.
-// Answers are plain text with **bold**, [n] citations and LaTeX maths; anything else stays literal, so model output is never rendered as raw HTML.
-function withCitations(text: string, sources: ChatSource[]): React.ReactNode[] {
-  return text.replace(/^#{1,6}\s+/gm, "").split(/(\[\d+\]|\*\*[^*\n]+\*\*)/g).map((part, index) => {
-    if (/^\*\*[^*\n]+\*\*$/.test(part)) return <strong key={index}>{part.slice(2, -2)}</strong>;
-    const source = sources.find((item) => `[${item.id}]` === part);
-    if (!source) return part;
-    return <a key={index} href={source.href} target="_blank" rel="noreferrer" title={`${source.label}${source.page ? `, page ${source.page}` : ""}`} className="mx-0.5 rounded-[3px] bg-[#e6f3f5] px-1 text-[11px] font-semibold text-[#1b6f7c] no-underline hover:bg-[#cfe9ed]">{source.id}</a>;
-  });
-}
-
-// \( \) and \[ \] are what the model emits; $$ $$ is a common fallback. Single $ is left alone because answers mention money.
-const mathPattern = /(\\\[[\s\S]+?\\\]|\\\([\s\S]+?\\\)|\$\$[\s\S]+?\$\$)/g;
-
-const isDisplayMath = (part = ""): boolean => part.startsWith("\\[") || part.startsWith("$$");
-
-function renderAnswer(text: string, sources: ChatSource[]): React.ReactNode[] {
-  const parts = text.split(mathPattern);
-  return parts.map((part, index) => {
-    const display = isDisplayMath(part);
-    if (!(display || part.startsWith("\\("))) {
-      // A displayed equation is already its own block, so the line breaks around it would double the gap.
-      const trimmed = part.replace(isDisplayMath(parts[index - 1]) ? /^[ \t]*\n/ : /^$/, "").replace(isDisplayMath(parts[index + 1]) ? /\n[ \t]*$/ : /^$/, "");
-      return <Fragment key={index}>{withCitations(trimmed, sources)}</Fragment>;
-    }
-    // KaTeX escapes its input and, with trust off, emits only its own markup.
-    const html = katex.renderToString(part.slice(2, -2), { displayMode: display, throwOnError: false, trust: false });
-    return <span key={index} className={display ? "my-1 block overflow-x-auto" : undefined} dangerouslySetInnerHTML={{ __html: html }} />;
-  });
-}
 
 export function ChatWidget({ course }: { course: Course }) {
   const [open, setOpen] = useState(false);
@@ -118,7 +86,7 @@ export function ChatWidget({ course }: { course: Course }) {
               ? <div key={index} data-turn className="ml-auto w-fit max-w-[85%] whitespace-pre-wrap rounded-[4px] bg-[#2b2f6b] px-3 py-2 text-[14px] text-white">{turn.content}</div>
               : (
                 <div key={index} data-turn className="max-w-[95%] text-[14px] leading-6">
-                  <div className="whitespace-pre-wrap rounded-[4px] border border-[#e5e5e5] bg-white px-3 py-2">{renderAnswer(turn.content, turn.sources ?? [])}</div>
+                  <div className="whitespace-pre-wrap rounded-[4px] border border-[#e5e5e5] bg-white px-3 py-2"><RichAnswer text={turn.content} sources={turn.sources ?? []} /></div>
                   {turn.mode === "ai" && <p className="mt-1 text-[11px] text-[#888]">Sentences with a numbered link come from your course material. Anything without one is a general explanation.</p>}
                   {turn.sources && turn.sources.length > 0 && (
                     <div className="mt-2 space-y-1.5">

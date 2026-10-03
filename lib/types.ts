@@ -80,3 +80,4 @@ export type NoticePreview = {
 export type ChatSource = { id: number; label: string; page: number | null; href: string; excerpt: string; visuals?: QuestionVisual[] };
 export type ChatMessage = { role: "user" | "assistant"; content: string };
 export type ChatResponse = { answer: string; sources: ChatSource[]; mode: "ai" | "sources-only" };
+export type ExplanationResponse = { data: string; sources: ChatSource[]; source: "verified-answer-key" | "ai-study-explanation" | "configuration" };

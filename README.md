@@ -151,6 +151,18 @@ Keys are excluded from Git through `.gitignore`.
 
 Every push to `main` runs `.github/workflows/deploy-pages.yml`, which builds a static export (`GITHUB_PAGES=true npm run build`) and publishes it to https://sanya28wd.github.io/AI-Library-Assistant/. GitHub Pages cannot run API routes, so the static demo leaves out the study chatbot, notice file upload and AI explanations; pasted notice text is still matched in the browser. Run the app locally for the full version.
 
+### Demo runbook
+
+Present from the **local full version** so the study assistant and AI explanations work: put `OPENAI_API_KEY` in `.env.local` and run `npm run dev`. Share the GitHub Pages link afterwards for people to browse on their own.
+
+A five-minute walk-through:
+
+1. **Start screen** (`/`): the library-style landing page and the three course cards.
+2. **Course page** (e.g. Machine Learning): switch campuses with the Dubai / Hyderabad / Goa / Pilani buttons, and open an exam inside a bundled PDF.
+3. **Exam notice**: upload `exam notices /Untitled document (5) copy.pdf` on GS F211 (a mid-sem notice), keep the suggested topics, and click *Find matching questions*.
+4. **Explanations**: on a question card, click *Reveal answer / explanation*. Verified answers show instantly; other questions get a cited AI explanation labelled as not verified by faculty.
+5. **Study assistant**: click *Ask the study assistant*, ask e.g. "When is quicksort worst case?" on CS F364, and open one of the cited source pages.
+
 ### Start local Supabase
 
 The repository includes the initial migration at `supabase/migrations/001_initial_schema.sql`.
@@ -165,13 +177,13 @@ It creates the database model for `Subject`, `Topic`, `CourseMaterial`, `Materia
 
 | Route | Purpose |
 |---|---|
-| `GET /api/questions` | Filter reviewed questions by topic, assessment type, and free text |
-| `POST /api/notices/preview` | Return temporary course-topic suggestions from notice text |
-| `POST /api/practice-sets` | Create a filtered, randomized practice set |
-| `POST /api/questions/:id/explanation` | Return a verified answer or AI study explanation |
-| `POST /api/admin/materials` | Queue an uploaded course material file for review |
-| `POST /api/admin/materials/:id/process` | Process a queued material item |
-| `POST /api/admin/questions/:id/publish` | Publish an approved question |
+| `GET /api/questions` | Search reviewed questions by course, topic, assessment type, campus, and free text |
+| `POST /api/notices/preview` | Return temporary course-topic suggestions from an uploaded or pasted notice |
+| `POST /api/chat` | Course study assistant: retrieve passages from the ingested papers and answer with citations |
+| `POST /api/questions/:id/explanation` | Return a verified answer, or an AI explanation grounded in the question's own page and related course material |
+| `POST /api/admin/materials` | Placeholder: will queue an uploaded course material for review (staff workflow, not built yet) |
+| `POST /api/admin/materials/:id/process` | Placeholder: will process a queued material |
+| `POST /api/admin/questions/:id/publish` | Placeholder: will publish an approved question |
 
 ## Privacy and review principles
 

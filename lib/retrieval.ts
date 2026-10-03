@@ -12,8 +12,19 @@ const stopwords = new Set("the and for are but not you all any can had her was o
 // Notices are student-specific and never part of the answerable corpus.
 const answerableKinds = new Set(["paper", "answer-key", "handout"]);
 
+// Two-letter course terms worth keeping; other short tokens are mostly noise.
+const shortTerms = new Set(["dp", "np", "em", "ai", "ml", "pc", "qp", "rl", "nn", "lp"]);
+
+// Conservative plural folding: "queries" → "query", "graphs" → "graph", but "class", "bus", "analysis" and "uses" stay intact.
+function singular(word: string): string {
+  if (word.length > 4 && word.endsWith("ies")) return `${word.slice(0, -3)}y`;
+  if (word.length > 4 && /(sses|ches|shes|xes)$/.test(word)) return word.slice(0, -2);
+  if (word.length > 4 && word.endsWith("s") && !/(ss|us|is)$/.test(word)) return word.slice(0, -1);
+  return word;
+}
+
 function tokenize(text: string): string[] {
-  return text.toLowerCase().replace(/[’']/g, "").split(/[^a-z0-9]+/).filter((word) => word.length > 2 && !stopwords.has(word)).map((word) => word.replace(/(ies|es|s)$/, (suffix) => suffix === "ies" ? "y" : ""));
+  return text.toLowerCase().replace(/[’']/g, "").split(/[^a-z0-9]+/).filter((word) => (word.length > 2 || shortTerms.has(word)) && !stopwords.has(word)).map(singular);
 }
 
 function chunk(text: string, size = 900): string[] {
@@ -92,10 +103,30 @@ function label(material: Material, page: number | null): string {
   return `${examLabel(material, page ?? undefined)}${campus}`;
 }
 
+// Students type abbreviations that papers spell out ("DP" vs "dynamic programming"); expand them in the query only.
+const abbreviations: Record<string, string> = {
+  dp: "dynamic programming",
+  mst: "minimum spanning tree",
+  svm: "support vector machine",
+  nn: "neural network",
+  rl: "reinforcement learning",
+  lp: "linear programming",
+  em: "expectation maximization",
+  bfs: "breadth first search",
+  dfs: "depth first search"
+};
+
+function expandAbbreviations(query: string): string {
+  return query.replace(/[A-Za-z]+/g, (word) => {
+    const expansion = abbreviations[word.toLowerCase()];
+    return expansion ? `${word} ${expansion}` : word;
+  });
+}
+
 // BM25 over one course's ingested material; small enough to score in memory on every request.
 export function retrieve(query: string, courseId: string, limit = 6): ChatSource[] {
   const index = currentIndex().filter((passage) => passage.material.courseId === courseId);
-  const queryTokens = tokenize(query);
+  const queryTokens = tokenize(expandAbbreviations(query));
   const queryTerms = [...new Set(queryTokens)];
   const phrases = queryTokens.slice(1).map((token, position) => ` ${queryTokens[position]} ${token} `);
   if (index.length === 0 || queryTerms.length === 0) return [];
@@ -123,4 +154,18 @@ export function retrieve(query: string, courseId: string, limit = 6): ChatSource
     excerpt: passage.text,
     ...(passage.visuals.length > 0 && { visuals: passage.visuals })
   }));
+}
+
+/** The full extracted text of one paper page, so an explanation always sees the question's own data and tables. */
+export function pageSource(materialId: string, page: number, id = 1): ChatSource | null {
+  const passages = currentIndex().filter((passage) => passage.material.id === materialId && passage.page === page);
+  if (passages.length === 0) return null;
+  const material = passages[0].material;
+  return {
+    id,
+    label: label(material, page),
+    page,
+    href: `${sourcePath(material.fileName)}#page=${page}`,
+    excerpt: [...new Set(passages.map((passage) => passage.text))].join("\n").slice(0, 3000)
+  };
 }
