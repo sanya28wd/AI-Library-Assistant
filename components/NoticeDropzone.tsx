@@ -81,7 +81,7 @@ export function NoticeDropzone({ course }: { course: Course }) {
   }
 
   return (
-    <section className="rounded-[3px] border border-[#ececec] bg-white p-4 shadow-[0_1px_4px_rgba(0,0,0,0.08)] sm:p-5">
+    <section id="notice" className="scroll-mt-4 rounded-[3px] border border-[#ececec] bg-white p-4 shadow-[0_1px_4px_rgba(0,0,0,0.08)] sm:p-5">
       <h2 className="text-[16px] font-semibold">Preparing for an exam? Start from your notice</h2>
       <p className="mt-1 text-[13px] text-[#555]">Upload your exam notice and get practice questions picked from past papers for exactly what your exam covers, with answer keys where available and a study assistant to help you through them. Your notice is read once and never stored.</p>
 

@@ -28,7 +28,7 @@ export default async function CoursePage({ params }: { params: Promise<{ courseI
         <div className="space-y-6 p-3 sm:p-4">
           <NoticeDropzone course={course} />
 
-          <section>
+          <section id="papers" className="scroll-mt-4">
             <div className="mb-2 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 px-1">
               <h2 className="text-[16px] font-semibold">Previous year papers</h2>
               <span className="text-[13px] text-[#666]">{papers.length} papers <span className="mx-1 text-[#ccc]">|</span> <Link href={engine} className="font-semibold text-[#2b2f6b] hover:underline">Search questions by topic →</Link></span>
