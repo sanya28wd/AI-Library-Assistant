@@ -166,8 +166,10 @@ export function ChatWidget({ course }: { course: Course }) {
         </section>
       )}
 
-      <button onClick={() => setOpen((current) => !current)} aria-label={open ? "Close study assistant" : "Open study assistant"} title="Ask the study assistant" className="fixed bottom-6 right-6 z-30 grid h-14 w-14 place-items-center rounded-full bg-[#1d8fe1] text-white shadow-[0_6px_18px_rgba(0,0,0,0.25)] hover:bg-[#1479c2]">
-        {open ? <X size={26} /> : <MessageCircle size={28} />}
+      <button onClick={() => setOpen((current) => !current)} aria-label={open ? "Close study assistant" : "Open study assistant"} className="fixed bottom-6 right-6 z-30 inline-flex h-12 items-center gap-2 rounded-full bg-[#1d8fe1] pl-4 pr-5 text-[14px] font-semibold text-white shadow-[0_6px_18px_rgba(0,0,0,0.25)] transition hover:-translate-y-0.5 hover:bg-[#1479c2]">
+        {open
+          ? <><X size={20} />Close</>
+          : <><MessageCircle size={20} /><span className="sm:hidden">Chat</span><span className="hidden sm:inline">Ask the study assistant</span></>}
       </button>
     </>
   );

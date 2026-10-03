@@ -3,7 +3,8 @@ import { AssessmentType, Course, Material, PaperSection, Question, Topic } from 
 
 export const courses: Course[] = [
   { id: "gs-f211", code: "GS F211", name: "Modern Political Concepts", campus: "Dubai", semester: "I 2025-26", available: true },
-  { id: "cs-f364", code: "CS F364", name: "Design and Analysis of Algorithms", campus: "Dubai", semester: "II 2025-26", available: true }
+  { id: "cs-f364", code: "CS F364", name: "Design and Analysis of Algorithms", campus: "Dubai", semester: "II 2025-26", available: true },
+  { id: "bits-f464", code: "BITS F464", name: "Machine Learning", campus: "Dubai", semester: "", available: true }
 ];
 
 export const topics: Topic[] = [
@@ -22,6 +23,15 @@ export const topics: Topic[] = [
   { id: "dynamic-programming", courseId: "cs-f364", name: "Dynamic Programming", description: "0/1 knapsack, LCS, optimal BSTs, matrix chains and DP on trees.", keywords: ["dynamic programming", "0/1 knapsack", "knapsack", "longest common subsequence", "optimal binary search tree", "matrix chain", "assembly line", "multistage"] },
   { id: "backtracking", courseId: "cs-f364", name: "Backtracking & Branch and Bound", description: "N-Queens, sum of subsets, graph colouring and branch-and-bound search.", keywords: ["backtracking", "branch and bound", "n-queens", "queens", "sum of subsets", "subset sum", "graph coloring", "graph colouring", "hamiltonian"] },
   { id: "np", courseId: "cs-f364", name: "NP-Completeness & Approximation", description: "P vs NP, reductions, SAT, clique, vertex cover, bin packing and approximation algorithms.", keywords: ["np-complete", "np complete", "np-hard", "np hard", "p and np", "reduction", "satisfiability", "3sat", "cnf", "clique", "vertex cover", "node cover", "approximation", "bin packing", "non-deterministic", "nondeterministic"] },
+  { id: "ml-evaluation", courseId: "bits-f464", name: "Bias, Variance & Model Evaluation", description: "Overfitting, bias-variance trade-off, cross-validation, confusion matrices, precision, recall and F1.", keywords: ["bias", "variance", "overfitting", "underfitting", "cross-validation", "cross validation", "confusion matrix", "precision", "recall", "f1", "accuracy", "vc dimension", "hypothesis space"] },
+  { id: "ml-regression", courseId: "bits-f464", name: "Regression & Gradient Descent", description: "Linear and polynomial regression, cost functions, gradient descent, regularisation and logistic regression.", keywords: ["linear regression", "polynomial regression", "least squares", "regression line", "gradient descent", "learning rate", "cost function", "regularization", "regularisation", "ridge", "lasso", "logistic regression"] },
+  { id: "ml-bayes", courseId: "bits-f464", name: "Bayesian Learning", description: "Bayes’ theorem, naive Bayes, Bayesian networks, MLE/MAP and hidden Markov models.", keywords: ["bayes", "naive bayes", "bayesian network", "bayes network", "maximum likelihood", "posterior", "prior probability", "hidden markov", "hmm"] },
+  { id: "ml-trees", courseId: "bits-f464", name: "Decision Trees & Ensembles", description: "Entropy, information gain and Gini; random forests, bagging and boosting.", keywords: ["decision tree", "entropy", "information gain", "gini", "id3", "random forest", "bagging", "boosting", "adaboost", "ensemble"] },
+  { id: "ml-svm", courseId: "bits-f464", name: "SVMs, Kernels & k-NN", description: "Maximum-margin classifiers, support vectors, kernels and nearest-neighbour classification.", keywords: ["svm", "support vector", "margin", "kernel", "hyperplane", "nearest neighbour", "nearest neighbor", "knn", "k-nn"] },
+  { id: "ml-neural", courseId: "bits-f464", name: "Neural Networks", description: "Perceptrons, activation functions, multilayer networks and backpropagation.", keywords: ["neural network", "perceptron", "backpropagation", "back propagation", "activation function", "relu", "sigmoid", "hidden layer", "deep learning"] },
+  { id: "ml-clustering", courseId: "bits-f464", name: "Clustering & Mixture Models", description: "k-means, hierarchical clustering, Gaussian mixtures and the EM algorithm.", keywords: ["k-means", "kmeans", "clustering", "cluster", "hierarchical", "gaussian mixture", "gmm", "expectation maximization", "expectation-maximization"] },
+  { id: "ml-dimensionality", courseId: "bits-f464", name: "Dimensionality Reduction", description: "Principal component analysis and linear discriminant analysis.", keywords: ["pca", "principal component", "dimensionality reduction", "dimension reduction", "lda", "linear discriminant", "fisher"] },
+  { id: "ml-reinforcement", courseId: "bits-f464", name: "Reinforcement Learning", description: "Rewards, discounting, Markov decision processes and Q-learning.", keywords: ["reinforcement", "q-learning", "q learning", "reward", "markov decision"] },
   { id: "lp-assignment", courseId: "cs-f364", name: "Linear Programming & Assignment", description: "Linear programming, the simplex method and the Hungarian assignment method.", keywords: ["linear programming", "simplex", "hungarian", "assignment problem"] }
 ];
 
@@ -29,6 +39,8 @@ const modpol = { courseId: "gs-f211", campus: "Dubai" };
 const daaDubai = { courseId: "cs-f364", campus: "Dubai", kind: "paper" as const, title: "CS F364 Question Paper", status: "review" as const };
 const daaHyderabad = { ...daaDubai, campus: "Hyderabad" };
 const daaFolder = "papers/papers-design and analysis of alogorithm";
+const ml = { courseId: "bits-f464", kind: "paper" as const, title: "BITS F464 Question Paper", status: "review" as const };
+const mlFolder = "papers/machine learning ";
 
 function section(label: string, assessmentType: AssessmentType, startPage: number, note?: PaperSection["note"]): PaperSection {
   return { label, assessmentType, startPage, note };
@@ -67,6 +79,28 @@ export const materials: Material[] = [
   { ...daaDubai, id: "daa-1915", fileName: "cs-f364/dubai/1915.pdf", source: `${daaFolder}/dubai campus /1915.pdf`, year: "2024-25", session: "Second Semester", assessmentType: "Mid-semester", pages: 18, sections: [section("Mid-semester", "Mid-semester", 1), section("Comprehensive", "Comprehensive", 13)] },
   { ...daaHyderabad, id: "daa-hyd-midsem", fileName: "cs-f364/hyderabad/Midsem.pdf", source: `${daaFolder}/hyderabad campus/Midsem.pdf`, year: "2023-24", session: "Second Semester", assessmentType: "Mid-semester", pages: 1 },
   { ...daaHyderabad, id: "daa-hyd-compre-a", fileName: "cs-f364/hyderabad/Part-A-QP.pdf", source: `${daaFolder}/hyderabad campus/Part-A-QP.pdf`, year: "2023-24", session: "Second Semester", assessmentType: "Comprehensive", pages: 3, sections: [section("Comprehensive Part A", "Comprehensive", 1)] },
+  { ...ml, id: "ml-996", campus: "Dubai", fileName: "bits-f464/dubai/996.pdf", source: `${mlFolder}/dubai/996.pdf`, year: "2019-20", session: "First Semester", assessmentType: "Test", pages: 12, sections: [section("Test 1", "Test", 1), section("Test 2", "Test", 4), section("Comprehensive", "Comprehensive", 6), section("Quiz", "Quiz", 11)] },
+  { ...ml, id: "ml-1068", campus: "Dubai", fileName: "bits-f464/dubai/1068.pdf", source: `${mlFolder}/dubai/1068.pdf`, year: "2019-20", session: "Second Semester", assessmentType: "Comprehensive", pages: 17, sections: [section("Comprehensive", "Comprehensive", 1), section("Test 2", "Test", 6), section("Test 1", "Test", 10), section("Quiz", "Quiz", 14, "solutions")] },
+  { ...ml, id: "ml-1185", campus: "Dubai", fileName: "bits-f464/dubai/1185.pdf", source: `${mlFolder}/dubai/1185.pdf`, year: "2020-21", session: "First Semester", assessmentType: "Test", pages: 10, sections: [section("Test 1", "Test", 1), section("Test 2", "Test", 3), section("Comprehensive (Session 1)", "Comprehensive", 6), section("Comprehensive (Session 2)", "Comprehensive", 8)] },
+  { ...ml, id: "ml-1250", campus: "Dubai", fileName: "bits-f464/dubai/1250.pdf", source: `${mlFolder}/dubai/1250.pdf`, year: "2020-21", session: "Second Semester", assessmentType: "Test", pages: 9, sections: [section("Test 1", "Test", 1), section("Test 2", "Test", 3), section("Comprehensive (Section 1)", "Comprehensive", 5), section("Comprehensive (Section 2)", "Comprehensive", 8)] },
+  // The higher-degree (M.E.) offering; its Test 1 header says First Semester but the paper is dated March 2021.
+  { ...ml, id: "ml-1342", campus: "Dubai", offering: "M.E.", fileName: "bits-f464/dubai/1342.pdf", source: `${mlFolder}/dubai/1342.pdf`, year: "2020-21", session: "Second Semester", assessmentType: "Comprehensive", pages: 8, sections: [section("Comprehensive Part A (M.E.)", "Comprehensive", 1), section("Comprehensive Part B (M.E.)", "Comprehensive", 3), section("Test 2 (M.E.)", "Test", 5), section("Test 1 (M.E.)", "Test", 7)] },
+  { ...ml, id: "ml-1490", campus: "Dubai", fileName: "bits-f464/dubai/1490.pdf", source: `${mlFolder}/dubai/1490.pdf`, year: "2021-22", session: "Second Semester", assessmentType: "Mid-semester", pages: 7, sections: [section("Mid-semester", "Mid-semester", 1), section("Comprehensive", "Comprehensive", 4)] },
+  { ...ml, id: "ml-1637", campus: "Dubai", fileName: "bits-f464/dubai/1637.pdf", source: `${mlFolder}/dubai/1637.pdf`, year: "2022-23", session: "Second Semester", assessmentType: "Mid-semester", pages: 7, sections: [section("Mid-semester", "Mid-semester", 1), section("Comprehensive", "Comprehensive", 4)] },
+  { ...ml, id: "ml-1708", campus: "Dubai", fileName: "bits-f464/dubai/1708.pdf", source: `${mlFolder}/dubai/1708.pdf`, year: "2023-24", session: "First Semester", assessmentType: "Mid-semester", pages: 7, sections: [section("Mid-semester", "Mid-semester", 1), section("Comprehensive", "Comprehensive", 4)] },
+  { ...ml, id: "ml-1758", campus: "Dubai", fileName: "bits-f464/dubai/1758.pdf", source: `${mlFolder}/dubai/1758.pdf`, year: "2023-24", session: "Second Semester", assessmentType: "Mid-semester", pages: 15, sections: [section("Mid-semester", "Mid-semester", 1, "answer key"), section("Comprehensive", "Comprehensive", 8, "answer key")] },
+  { ...ml, id: "ml-goa-2223-mid", campus: "Goa", fileName: "bits-f464/goa/BITS-F464-MIDS-Q.pdf", source: `${mlFolder}/goa/BITS-F464-MIDS-Q.pdf`, year: "2022-23", session: "First Semester", assessmentType: "Mid-semester", pages: 2 },
+  { ...ml, id: "ml-goa-2223-makeup", campus: "Goa", fileName: "bits-f464/goa/BITS-F464-MIDS-Make-Up-Q.pdf", source: `${mlFolder}/goa/BITS-F464-MIDS-Make-Up-Q.pdf`, year: "2022-23", session: "First Semester", assessmentType: "Mid-semester", pages: 1, sections: [section("Mid-semester (make-up)", "Mid-semester", 1)] },
+  { ...ml, id: "ml-goa-2223-compre", campus: "Goa", fileName: "bits-f464/goa/BITS-F464-Compre-Q.pdf", source: `${mlFolder}/goa/BITS-F464-Compre-Q.pdf`, year: "2022-23", session: "First Semester", assessmentType: "Comprehensive", pages: 2 },
+  { ...ml, id: "ml-goa-2324-mid", campus: "Goa", fileName: "bits-f464/goa/BITS_F464_MIDS_Q.pdf", source: `${mlFolder}/goa/BITS_F464_MIDS_Q.pdf`, year: "2023-24", session: "Second Semester", assessmentType: "Mid-semester", pages: 6 },
+  { ...ml, id: "ml-goa-2324-compre", campus: "Goa", fileName: "bits-f464/goa/BITS_F464_Compre_Q.pdf", source: `${mlFolder}/goa/BITS_F464_Compre_Q.pdf`, year: "2023-24", session: "Second Semester", assessmentType: "Comprehensive", pages: 7 },
+  { ...ml, id: "ml-hyd-2223-mid", campus: "Hyderabad", fileName: "bits-f464/hyderabad/DqJLqw-Mid-Sem.pdf", source: `${mlFolder}/hyderabad/DqJLqw-Mid-Sem.pdf`, year: "2022-23", session: "Second Semester", assessmentType: "Mid-semester", pages: 2 },
+  { ...ml, id: "ml-hyd-2223-compre", campus: "Hyderabad", fileName: "bits-f464/hyderabad/oaAUQq-Compre.pdf", source: `${mlFolder}/hyderabad/oaAUQq-Compre.pdf`, year: "2022-23", session: "Second Semester", assessmentType: "Comprehensive", pages: 3 },
+  // hyderabad/Mid-Sem_ynm8NVG.pdf is a byte-identical copy of Mid-Sem.pdf, so only one is listed.
+  { ...ml, id: "ml-hyd-2324a-mid", campus: "Hyderabad", fileName: "bits-f464/hyderabad/Mid-Sem.pdf", source: `${mlFolder}/hyderabad/Mid-Sem.pdf`, year: "2023-24", session: "First Semester", assessmentType: "Mid-semester", pages: 9 },
+  { ...ml, id: "ml-hyd-2324a-compre", campus: "Hyderabad", fileName: "bits-f464/hyderabad/Compre.pdf", source: `${mlFolder}/hyderabad/Compre.pdf`, year: "2023-24", session: "First Semester", assessmentType: "Comprehensive", pages: 14 },
+  { ...ml, id: "ml-hyd-2324b-mid", campus: "Hyderabad", fileName: "bits-f464/hyderabad/hota-midsem-2023-24.pdf", source: `${mlFolder}/hyderabad/BITS_F464-ML-Mid_qp_-Prof._C._Hota.PDF`, year: "2023-24", session: "Second Semester", assessmentType: "Mid-semester", pages: 4 },
+  { ...ml, id: "ml-hyd-2324b-compre", campus: "Hyderabad", fileName: "bits-f464/hyderabad/hota-compre-2023-24.pdf", source: `${mlFolder}/hyderabad/BITS_F464-ML-Compre_qp.-Prof._C._Hota.PDF`, year: "2023-24", session: "Second Semester", assessmentType: "Comprehensive", pages: 4 },
   { ...daaHyderabad, id: "daa-hyd-compre-b", fileName: "cs-f364/hyderabad/Part-B-QP.pdf", source: `${daaFolder}/hyderabad campus/Part-B-QP.pdf`, year: "2023-24", session: "Second Semester", assessmentType: "Comprehensive", pages: 2, sections: [section("Comprehensive Part B", "Comprehensive", 1)] }
 ];
 
@@ -104,12 +138,36 @@ export const questions: Question[] = [
   { id: "d-19", text: "Solve the recurrence T(n) = 2T(n/2) + n log n (the master theorem does not apply), and solve aₙ − 3aₙ₋₁ + 2aₙ₋₂ = 0 with a₀ = 1, a₁ = 3 using generating functions.", marks: 20, topicIds: ["asymptotic"], materialId: "daa-hyd-midsem", page: 1, verifiedAnswer: false },
   { id: "d-20", text: "MaxDiff: find the maximum difference between any two of n elements. Count the comparisons of the min/max approach, then design a divide-and-conquer algorithm using about 3n/2 comparisons, with pseudocode and its recurrence.", marks: 15, topicIds: ["divide-conquer", "asymptotic"], materialId: "daa-hyd-midsem", page: 1, verifiedAnswer: false },
   { id: "d-21", text: "Given integers A₁…Aₙ, find i ≤ j maximising Aᵢ + … + Aⱼ with a divide-and-conquer algorithm in O(n log n). Write its recurrence and solution.", marks: 10, topicIds: ["divide-conquer", "asymptotic"], materialId: "daa-hyd-compre-b", page: 1, verifiedAnswer: false },
-  { id: "d-22", text: "Find the largest independent set in a rooted tree: give the recursive relation, describe the linear-time dynamic programming solution, and analyse its running time.", marks: 10, topicIds: ["dynamic-programming", "graphs"], materialId: "daa-hyd-compre-b", page: 1, verifiedAnswer: false }
+  { id: "d-22", text: "Find the largest independent set in a rooted tree: give the recursive relation, describe the linear-time dynamic programming solution, and analyse its running time.", marks: 10, topicIds: ["dynamic-programming", "graphs"], materialId: "daa-hyd-compre-b", page: 1, verifiedAnswer: false },
+
+  // BITS F464: condensed from the paper; open the source page for tables, figures and full data.
+  { id: "ml-1", text: "A three-class model (bright, average, poor) produced the given confusion matrix. Calculate the F1-score and accuracy for each class, showing every step.", marks: 5, topicIds: ["ml-evaluation"], materialId: "ml-1708", page: 1, verifiedAnswer: false },
+  { id: "ml-2", text: "Using the insurance dataset (gender, income, credit score → willing to buy), construct the decision tree with the Gini index, and find the threshold for discretising the continuous credit scores 53, 59, 71, 83, 91 and 101.", marks: 7, topicIds: ["ml-trees"], materialId: "ml-1758", page: 1, verifiedAnswer: false },
+  { id: "ml-3", text: "Device lifetime falls with temperature (10–90 °C → 420 to 5 hours). Estimate the regression line y = mx + c, draw the best-fit line, and calculate R² for the data.", marks: 5, topicIds: ["ml-regression"], materialId: "ml-1758", page: 1, verifiedAnswer: false },
+  { id: "ml-4", text: "Run two iterations of k-means with Chebyshev distance on points A1–A6, starting from centres C1(185, 72) and C2(170, 56). Then find the initial means, variances and mixing coefficients for EM on a Gaussian mixture.", marks: 9, topicIds: ["ml-clustering"], materialId: "ml-1758", page: 8, verifiedAnswer: false },
+  { id: "ml-5", text: "Five weak classifiers H1–H5 misclassify the given training points A–G. Perform two rounds of boosting: update the point weights, compute each classifier’s error rate, and give the chosen weak classifier, its error and its voting power α.", marks: 5, topicIds: ["ml-trees"], materialId: "ml-1637", page: 4, verifiedAnswer: false },
+  { id: "ml-6", text: "Use principal component analysis to reduce six 2-D feature vectors to one dimension. Show the covariance matrix, eigenvalues, normalised eigenvectors and the projected points on PC1.", marks: 6, topicIds: ["ml-dimensionality"], materialId: "ml-1637", page: 5, verifiedAnswer: false },
+  { id: "ml-7", text: "For the given sample data points, find the support vectors and draw the decision boundary of a linear SVM, showing how the separating hyperplane is calculated.", marks: 5, topicIds: ["ml-svm"], materialId: "ml-1490", page: 5, verifiedAnswer: false },
+  { id: "ml-8", text: "Apply linear discriminant analysis to the given two-class points, calculate their projected values, and find each point’s discriminant value towards cluster 1.", marks: 8, topicIds: ["ml-dimensionality"], materialId: "ml-1250", page: 8, verifiedAnswer: false },
+  { id: "ml-9", text: "Reaching the goal state G earns a reward of 100 with discount factor 0.9. Apply Q-learning to calculate the value of moving between states until the goal is reached, and write the Q-learning update formula.", marks: 5, topicIds: ["ml-reinforcement"], materialId: "ml-1068", page: 1, verifiedAnswer: false },
+  { id: "ml-10", text: "Write the derivative of the sigmoid function y(x).", marks: 1, topicIds: ["ml-neural"], materialId: "ml-996", page: 11, verifiedAnswer: false },
+  { id: "ml-11", text: "What is a perceptron?", options: ["A multi-layer network of neurons", "A single-layer network of neurons", "A single-layer network of neurons with a feed-forward circuit", "A neuron whose input link is not associated with a weight"], marks: 1, topicIds: ["ml-neural"], materialId: "ml-996", page: 11, verifiedAnswer: false },
+  { id: "ml-12", text: "A network that learns to drive from 64 × 64 grayscale images has 4,096 inputs, a ReLU hidden layer of 2,048 units and 2 linear outputs (steering angle and speed). Calculate the number of parameters in the network.", marks: null, topicIds: ["ml-neural"], materialId: "ml-hyd-2223-compre", page: 1, verifiedAnswer: false },
+  { id: "ml-13", text: "Do you agree that “decision trees need not handle missing values explicitly”? Justify your answer.", marks: 4, topicIds: ["ml-trees"], materialId: "ml-hyd-2223-compre", page: 1, verifiedAnswer: false },
+  { id: "ml-14", text: "Discuss a method to combat overfitting in decision trees.", marks: 4, topicIds: ["ml-trees", "ml-evaluation"], materialId: "ml-hyd-2223-compre", page: 1, verifiedAnswer: false },
+  { id: "ml-15", text: "How complex is it to build and test a random forest compared with a single decision tree? Explain in detail.", marks: 4, topicIds: ["ml-trees"], materialId: "ml-hyd-2223-compre", page: 1, verifiedAnswer: false },
+  { id: "ml-16", text: "For f : X → Y with X = ⟨X1, X2, X3, X4⟩ and binary Y, which of Fisher’s linear discriminant, logistic regression and naive Bayes contain enough information to recover the joint distribution P(X1, X2, X3, X4, Y)? Sketch how, or state what is missing.", marks: 6, topicIds: ["ml-bayes", "ml-regression"], materialId: "ml-hyd-2223-mid", page: 1, verifiedAnswer: false },
+  { id: "ml-17", text: "For the Bayes network over Storm, BusTourGroup, Lightning, Campfire, Thunder and ForestFire, how many parameters must at least be estimated from training data to define the joint distribution?", marks: 6, topicIds: ["ml-bayes"], materialId: "ml-hyd-2223-mid", page: 1, verifiedAnswer: false },
+  { id: "ml-18", text: "In a multivariate decision tree, not every input variable is needed at each internal node. Describe two techniques to reduce dimensionality at a node.", marks: 3, topicIds: ["ml-trees", "ml-dimensionality"], materialId: "ml-hyd-2324b-mid", page: 1, verifiedAnswer: false },
+  { id: "ml-19", text: "Using the dataset of studied hard, hours slept and lunch type → got an A, find the initial entropy of “Got A” and the attribute to split on first.", marks: null, topicIds: ["ml-trees"], materialId: "ml-hyd-2324b-mid", page: 1, verifiedAnswer: false },
+  { id: "ml-20", text: "Decide, with a short reason, whether each is an example of an additive model: boosted decision trees of depth d ≥ 2, linear models, neural networks with ReLU activations, and neural networks with identity activations.", marks: null, topicIds: ["ml-trees", "ml-neural"], materialId: "ml-goa-2324-mid", page: 3, verifiedAnswer: false }
 ];
 
 export function topicForId(id: string): Topic | undefined { return topics.find((topic) => topic.id === id); }
 export function materialForId(id: string): Material | undefined { return materials.find((material) => material.id === id); }
 export function courseForId(id: string): Course | undefined { return courses.find((course) => course.id === id); }
+
+export const campuses = ["Dubai", "Hyderabad", "Goa", "Pilani"];
 
 export const assessmentTypes: AssessmentType[] = ["Quiz", "Test", "Mid-semester", "Comprehensive"];
 
@@ -138,7 +196,7 @@ export function examLabel(material: Material, page?: number): string {
 }
 
 export function paperTitle(material: Material): string {
-  if ((material.sections?.length ?? 0) > 1) return `${material.year} ${material.session ?? ""} - ${material.sections!.length} exams`.replace("  ", " ");
+  if ((material.sections?.length ?? 0) > 1) return `${material.year} ${material.session ?? ""}${material.offering ? ` (${material.offering})` : ""} - ${material.sections!.length} exams`.replace("  ", " ");
   return examLabel(material);
 }
 
@@ -156,6 +214,7 @@ export function assessmentTypesForCourse(courseId: string): AssessmentType[] {
 
 export const chatSuggestions: Record<string, string[]> = {
   "gs-f211": ["What is surplus value?", "How does fascism use propaganda?", "Summarise the main ideas of liberalism", "What has the compre asked about feminism?"],
+  "bits-f464": ["What is the bias-variance trade-off?", "How do I calculate information gain?", "Explain PCA step by step", "What has the compre asked about SVMs?"],
   "cs-f364": ["How does Prim’s algorithm work?", "When is quicksort worst case?", "Explain the Hungarian method", "What NP-completeness questions come up in the compre?"]
 };
 

@@ -43,6 +43,8 @@ export type Material = {
   status: "published" | "review" | "fixture";
   answerKeyId?: string;
   sections?: PaperSection[];
+  /** Distinguishes parallel offerings in the same semester, e.g. "M.E." for the higher-degree paper. */
+  offering?: string;
 };
 
 export type QuestionVisual = {
