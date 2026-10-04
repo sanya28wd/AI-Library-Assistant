@@ -1,0 +1,270 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1100" viewBox="0 0 1600 1100" font-family="Inter, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#081022"/>
+      <stop offset="1" stop-color="#122347"/>
+    </linearGradient>
+    <linearGradient id="panel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#16295A"/>
+      <stop offset="1" stop-color="#101E42"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#F7D58B"/>
+      <stop offset="1" stop-color="#E3A94B"/>
+    </linearGradient>
+    <linearGradient id="teal" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#5EE6D0"/>
+      <stop offset="1" stop-color="#3BB4E8"/>
+    </linearGradient>
+    <linearGradient id="engine" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1B3470"/>
+      <stop offset="1" stop-color="#132652"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.4" r="0.6">
+      <stop offset="0" stop-color="#5EE6D0" stop-opacity="0.16"/>
+      <stop offset="1" stop-color="#5EE6D0" stop-opacity="0"/>
+    </radialGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#F2C46D"/>
+    </marker>
+    <marker id="arrowTeal" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#5EE6D0"/>
+    </marker>
+    <marker id="arrowCoral" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#FF9E7A"/>
+    </marker>
+    <style>
+      .h  { fill:#EEF3FF; font-size:17px; font-weight:700; }
+      .b  { fill:#C4D0EC; font-size:13.5px; }
+      .m  { fill:#8EA1CC; font-size:12.5px; }
+      .mono { font-family: 'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace; }
+      .col { fill:#F2C46D; font-size:13px; font-weight:700; letter-spacing:2.2px; }
+      .card { fill:url(#panel); stroke:#2C4580; stroke-width:1.4; }
+      .chip { fill:#0C1834; stroke:#34508F; stroke-width:1.2; }
+      .flow { fill:none; stroke:#F2C46D; stroke-width:2.2; }
+      .flowT { fill:none; stroke:#5EE6D0; stroke-width:2.2; }
+    </style>
+  </defs>
+
+  <!-- background -->
+  <rect width="1600" height="1100" rx="28" fill="url(#bg)"/>
+  <circle cx="970" cy="430" r="420" fill="url(#glow)"/>
+
+  <!-- header -->
+  <text x="48" y="66" fill="#EEF3FF" font-size="34" font-weight="800">AI Library Assistant <tspan fill="#F2C46D">·</tspan> System Architecture</text>
+  <text x="48" y="98" class="b" font-size="16">From scattered past-paper PDFs to cited, topic-first exam preparation</text>
+  <rect x="1236" y="44" width="316" height="40" rx="20" fill="#0C1834" stroke="#5EE6D0" stroke-width="1.4"/>
+  <circle cx="1262" cy="64" r="6" fill="#5EE6D0"/>
+  <text x="1278" y="69" fill="#DDFBF6" font-size="14" font-weight="600">Live on Vercel · Next.js 15</text>
+
+  <!-- column labels -->
+  <text x="48"   y="150" class="col">① SOURCES</text>
+  <text x="408"  y="150" class="col">② OFFLINE PIPELINE</text>
+  <text x="788"  y="150" class="col">③ RETRIEVAL + GROUNDED AI</text>
+  <text x="1228" y="150" class="col">④ NEXT.JS API ROUTES</text>
+
+  <!-- ============ ① SOURCES ============ -->
+  <g>
+    <rect x="40" y="172" width="300" height="118" rx="16" class="card"/>
+    <text x="64" y="204" class="h">📄  Past papers</text>
+    <text x="64" y="230" class="b">Quiz · Test · Mid-sem · Compre</text>
+    <text x="64" y="252" class="b">Dubai · Hyderabad · Goa · Pilani</text>
+    <text x="64" y="274" class="m">PDF, DOCX and scanned pages</text>
+
+    <rect x="40" y="306" width="300" height="104" rx="16" class="card"/>
+    <text x="64" y="338" class="h">📘  Course handouts</text>
+    <text x="64" y="364" class="b">The official syllabus language</text>
+    <text x="64" y="386" class="m">becomes the topic map students search</text>
+
+    <rect x="40" y="426" width="300" height="104" rx="16" class="card"/>
+    <text x="64" y="458" class="h">🔑  Answer keys</text>
+    <text x="64" y="484" class="b">Verified, faculty-written answers</text>
+    <text x="64" y="506" class="m">always shown apart from AI output</text>
+
+    <rect x="40" y="610" width="300" height="128" rx="16" fill="#1A1630" stroke="#FF9E7A" stroke-width="1.6" stroke-dasharray="7 5"/>
+    <text x="64" y="642" class="h">🗒️  Student's exam notice</text>
+    <text x="64" y="668" class="b">Uploaded PDF / DOCX or pasted text</text>
+    <text x="64" y="690" class="m">Read in memory only, never written</text>
+    <text x="64" y="710" class="m">to disk or a database</text>
+  </g>
+
+  <!-- sources → ingest -->
+  <path d="M340,231 C372,231 372,250 404,250" class="flow" marker-end="url(#arrow)"/>
+  <path d="M340,358 C376,358 370,262 404,262" class="flow"/>
+  <path d="M340,478 C382,478 366,272 404,272" class="flow"/>
+
+  <!-- ============ ② PIPELINE ============ -->
+  <g>
+    <rect x="404" y="172" width="320" height="158" rx="16" class="card"/>
+    <text x="428" y="204" class="h mono" font-size="16">$ npm run ingest</text>
+    <text x="428" y="232" class="b">• pdf-parse + Mammoth extraction</text>
+    <text x="428" y="256" class="b">• Tesseract OCR for scanned pages</text>
+    <text x="428" y="280" class="b">• file hashing + cached OCR</text>
+    <text x="428" y="304" class="b">• page-by-page text, kept with source</text>
+
+    <path d="M564,330 L564,352" class="flow" marker-end="url(#arrow)"/>
+    <!-- datastore 1 -->
+    <rect x="404" y="358" width="320" height="76" rx="16" class="chip"/>
+    <text x="428" y="390" class="b mono" fill="#F7D58B">ingested-materials.json</text>
+    <text x="428" y="414" class="m">52 files  ·  352 pages catalogued</text>
+    <circle cx="694" cy="396" r="14" fill="none" stroke="#F2C46D" stroke-width="1.6"/>
+    <path d="M687,392 h14 M687,398 h14" stroke="#F2C46D" stroke-width="1.6"/>
+
+    <path d="M564,434 L564,456" class="flow" marker-end="url(#arrow)"/>
+    <rect x="404" y="462" width="320" height="132" rx="16" class="card"/>
+    <text x="428" y="494" class="h mono" font-size="16">$ npm run embed</text>
+    <text x="428" y="522" class="b">• plain-language question profiles</text>
+    <text x="428" y="546" class="b">• text-embedding-3-small, 512-d</text>
+    <text x="428" y="570" class="b">• only new or changed text re-sent</text>
+
+    <path d="M564,594 L564,616" class="flow" marker-end="url(#arrow)"/>
+    <rect x="404" y="622" width="320" height="76" rx="16" class="chip"/>
+    <text x="428" y="654" class="b mono" fill="#F7D58B">embeddings.json</text>
+    <text x="428" y="678" class="m">1,082 passage + question vectors</text>
+    <circle cx="694" cy="660" r="14" fill="none" stroke="#F2C46D" stroke-width="1.6"/>
+    <path d="M687,656 h14 M687,662 h14" stroke="#F2C46D" stroke-width="1.6"/>
+
+    <rect x="404" y="724" width="320" height="110" rx="16" class="card"/>
+    <text x="428" y="756" class="h">🧭  Curated question bank</text>
+    <text x="428" y="782" class="b">3 courses · 24 topics · 52 questions</text>
+    <text x="428" y="806" class="m">each linked to its paper, page, campus,</text>
+    <text x="428" y="824" class="m">exam type and diagram context</text>
+  </g>
+
+  <!-- pipeline → engine -->
+  <path d="M724,396 C754,396 752,330 784,330" class="flow" marker-end="url(#arrow)"/>
+  <path d="M724,660 C756,660 752,420 784,420" class="flow" marker-end="url(#arrow)"/>
+  <path d="M724,779 C760,779 752,560 784,560" class="flow" marker-end="url(#arrow)"/>
+
+  <!-- ============ ③ ENGINE ============ -->
+  <g>
+    <rect x="784" y="172" width="384" height="470" rx="20" fill="url(#engine)" stroke="#5EE6D0" stroke-width="1.8"/>
+    <text x="808" y="204" class="h">⚡  Hybrid retrieval engine</text>
+    <text x="808" y="226" class="m mono">lib/retrieval.ts</text>
+
+    <rect x="808" y="242" width="336" height="40" rx="12" class="chip"/>
+    <text x="826" y="267" class="b">Query  →  abbreviation expansion</text>
+    <text x="1128" y="267" class="m mono" text-anchor="end">DP→dynamic…</text>
+
+    <path d="M904,282 L904,304" class="flowT" marker-end="url(#arrowTeal)"/>
+    <path d="M1048,282 L1048,304" class="flowT" marker-end="url(#arrowTeal)"/>
+
+    <rect x="808" y="310" width="160" height="112" rx="12" fill="#0E1D40" stroke="#F2C46D" stroke-width="1.4"/>
+    <text x="888" y="338" class="h" text-anchor="middle" font-size="15.5" fill="#F7D58B">Keyword · BM25</text>
+    <text x="888" y="362" class="m" text-anchor="middle">plural folding</text>
+    <text x="888" y="382" class="m" text-anchor="middle">phrase boost</text>
+    <text x="888" y="402" class="m" text-anchor="middle">header-word filter</text>
+
+    <rect x="984" y="310" width="160" height="112" rx="12" fill="#0E1D40" stroke="#5EE6D0" stroke-width="1.4"/>
+    <text x="1064" y="338" class="h" text-anchor="middle" font-size="15.5" fill="#A8F3E6">Meaning · vectors</text>
+    <text x="1064" y="362" class="m" text-anchor="middle">cosine similarity</text>
+    <text x="1064" y="382" class="m" text-anchor="middle">threshold ≥ 0.30</text>
+    <text x="1064" y="402" class="m" text-anchor="middle">catches paraphrases</text>
+
+    <path d="M888,422 L888,446" class="flowT" marker-end="url(#arrowTeal)"/>
+    <path d="M1064,422 L1064,446" class="flowT" marker-end="url(#arrowTeal)"/>
+
+    <rect x="808" y="452" width="336" height="40" rx="12" class="chip"/>
+    <text x="976" y="477" class="b" text-anchor="middle">Keyword veto: drop hits unrelated in meaning</text>
+
+    <path d="M976,492 L976,512" class="flowT" marker-end="url(#arrowTeal)"/>
+    <rect x="808" y="518" width="336" height="50" rx="12" fill="url(#teal)"/>
+    <text x="976" y="549" fill="#06213A" font-size="16" font-weight="800" text-anchor="middle">Reciprocal Rank Fusion  ·  1 / (60 + rank)</text>
+
+    <path d="M976,568 L976,588" class="flowT" marker-end="url(#arrowTeal)"/>
+    <text x="976" y="616" class="b" text-anchor="middle">Top-k passages with page links  <tspan fill="#F7D58B" font-weight="700">[1] [2] [3]</tspan></text>
+  </g>
+
+  <!-- engine → LLM -->
+  <path d="M976,642 L976,672" class="flow" marker-end="url(#arrow)"/>
+
+  <g>
+    <rect x="784" y="678" width="384" height="156" rx="20" class="card" stroke="#F2C46D"/>
+    <text x="808" y="710" class="h">🤖  Grounded generation</text>
+    <text x="1144" y="710" class="m mono" text-anchor="end">gpt-4.1-mini</text>
+    <text x="808" y="738" class="b">• cites course sources inline as [n]</text>
+    <text x="808" y="762" class="b">• labels anything beyond the sources</text>
+    <text x="808" y="786" class="b">• never invents numbers, edges or weights</text>
+    <text x="808" y="810" class="b">• works sources-only with no API key</text>
+  </g>
+
+  <!-- engine/LLM → API -->
+  <path d="M1168,400 L1222,400" class="flow" marker-end="url(#arrow)"/>
+  <path d="M1168,756 L1222,756" class="flow" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+
+  <!-- ============ ④ API ============ -->
+  <g>
+    <rect x="1224" y="172" width="336" height="662" rx="20" class="card"/>
+    <text x="1248" y="204" class="h">▲  Serverless API on Vercel</text>
+    <text x="1248" y="226" class="m mono">app/api/*</text>
+
+    <rect x="1244" y="244" width="296" height="100" rx="12" class="chip"/>
+    <text x="1262" y="272" class="b mono" fill="#F7D58B">GET /api/questions</text>
+    <text x="1262" y="296" class="b">Topic, campus, exam-type and</text>
+    <text x="1262" y="318" class="b">free-text search over the bank</text>
+
+    <rect x="1244" y="356" width="296" height="88" rx="12" class="chip"/>
+    <text x="1262" y="384" class="b mono" fill="#F7D58B">GET /api/questions/related</text>
+    <text x="1262" y="408" class="b">"Related by meaning" results</text>
+    <text x="1262" y="428" class="m">same idea, different wording</text>
+
+    <rect x="1244" y="456" width="296" height="88" rx="12" class="chip" stroke="#FF9E7A"/>
+    <text x="1262" y="484" class="b mono" fill="#FFC2A8">POST /api/notices/preview</text>
+    <text x="1262" y="508" class="b">Notice → syllabus topics + exam type</text>
+    <text x="1262" y="528" class="m">persisted: false</text>
+
+    <rect x="1244" y="556" width="296" height="88" rx="12" class="chip"/>
+    <text x="1262" y="584" class="b mono" fill="#F7D58B">POST /api/chat</text>
+    <text x="1262" y="608" class="b">Course study assistant with</text>
+    <text x="1262" y="628" class="m">follow-up aware retrieval</text>
+
+    <rect x="1244" y="656" width="296" height="160" rx="12" class="chip"/>
+    <text x="1262" y="684" class="b mono" fill="#F7D58B">POST /api/questions/:id/</text>
+    <text x="1262" y="704" class="b mono" fill="#F7D58B">       explanation</text>
+    <text x="1262" y="732" class="b">① verified answer key, instantly</text>
+    <text x="1262" y="756" class="b">② otherwise an AI explanation</text>
+    <text x="1262" y="778" class="m">grounded in the question's own</text>
+    <text x="1262" y="798" class="m">page first, then related material</text>
+  </g>
+
+  <!-- notice privacy path -->
+  <path d="M190,738 L190,862 L1196,862 L1196,500 L1240,500" fill="none" stroke="#FF9E7A" stroke-width="2.2" stroke-dasharray="8 6" marker-end="url(#arrowCoral)"/>
+  <rect x="470" y="848" width="380" height="28" rx="14" fill="#1A1630" stroke="#FF9E7A" stroke-width="1.2"/>
+  <text x="660" y="867" fill="#FFC2A8" font-size="13" font-weight="600" text-anchor="middle">🔒 private path: keyword match, nothing stored</text>
+
+  <!-- API → students -->
+  <path d="M1392,834 L1392,904" class="flow" marker-end="url(#arrow)"/>
+
+  <!-- ============ ⑤ STUDENT EXPERIENCE ============ -->
+  <g>
+    <rect x="40" y="910" width="1520" height="150" rx="22" fill="#0C1834" stroke="#F2C46D" stroke-width="1.6"/>
+    <text x="64" y="946" class="col">⑤ STUDENT EXPERIENCE</text>
+    <text x="1536" y="946" class="m" text-anchor="end">Library-style web app · React 19 · Tailwind · KaTeX</text>
+
+    <g font-size="14" font-weight="600" fill="#EEF3FF">
+      <rect x="64"   y="968" width="230" height="68" rx="14" fill="url(#panel)" stroke="#2C4580"/>
+      <text x="179"  y="998" text-anchor="middle">🏛️ Papers by campus</text>
+      <text x="179"  y="1020" text-anchor="middle" class="m" font-weight="400">bundled exams split out</text>
+
+      <rect x="310"  y="968" width="230" height="68" rx="14" fill="url(#panel)" stroke="#2C4580"/>
+      <text x="425"  y="998" text-anchor="middle">🔎 Topic-first search</text>
+      <text x="425"  y="1020" text-anchor="middle" class="m" font-weight="400">Quiz → Compre in one view</text>
+
+      <rect x="556"  y="968" width="230" height="68" rx="14" fill="url(#panel)" stroke="#2C4580"/>
+      <text x="671"  y="998" text-anchor="middle">🗒️ Notice → practice</text>
+      <text x="671"  y="1020" text-anchor="middle" class="m" font-weight="400">study exactly what's tested</text>
+
+      <rect x="802"  y="968" width="230" height="68" rx="14" fill="url(#panel)" stroke="#2C4580"/>
+      <text x="917"  y="998" text-anchor="middle">💡 Progressive nudges</text>
+      <text x="917"  y="1020" text-anchor="middle" class="m" font-weight="400">hints before answers</text>
+
+      <rect x="1048" y="968" width="230" height="68" rx="14" fill="url(#panel)" stroke="#2C4580"/>
+      <text x="1163" y="998" text-anchor="middle">💬 Study assistant</text>
+      <text x="1163" y="1020" text-anchor="middle" class="m" font-weight="400">cited answers, LaTeX maths</text>
+
+      <rect x="1294" y="968" width="242" height="68" rx="14" fill="url(#panel)" stroke="#2C4580"/>
+      <text x="1415" y="998" text-anchor="middle">📎 One click to source</text>
+      <text x="1415" y="1020" text-anchor="middle" class="m" font-weight="400">original PDF at #page=N</text>
+    </g>
+  </g>
+</svg>

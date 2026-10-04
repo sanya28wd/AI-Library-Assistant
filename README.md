@@ -1,209 +1,316 @@
-# AI Library Assistant
+<div align="center">
 
-> A topic-first past-paper search and practice tool for BITS Pilani, Dubai Campus students.
+<img src="docs/images/banner.png" alt="AI Library Assistant: Your exam is tomorrow. Find the questions that matter." width="100%" />
 
-Students usually receive a complete past paper as a PDF. That makes it difficult to answer practical revision questions: *Which past questions cover this topic?* *Has it appeared in quizzes, mid-sems, or comprehensive exams?* *What should I study from the topics listed in my exam notice?*
+# 📚 AI Library Assistant
 
-I built AI Library Assistant to turn an unstructured collection of papers, handouts, answer keys, and exam notices into a focused study experience. Instead of opening paper after paper manually, a student can select a syllabus topic, search a concept, or use an exam notice to retrieve relevant questions across every assessment type.
+### Search past papers by *topic*, not by year. Practise with hints. Get answers that cite the page they came from.
 
-The current pilot is seeded with **GS F211 - Modern Political Concepts** material for BITS Pilani, Dubai Campus.
+**Built for BITS Pilani students, starting with the Dubai Campus library.**
 
-## What it does
+<br/>
 
-- Search reviewed questions by syllabus topic or free text.
-- Search **Quiz, Mid-semester, and Comprehensive** papers together by default, then narrow to a single assessment type when needed.
-- Select one or more official topics from the course handout.
-- Paste topics from an exam notice to receive suggested course-topic matches. Notice text stays in the current browser session.
-- Create a short practice set from the current search results.
-- Open the original source material from every question card.
-- Reveal verified answer-key content where it exists; show an AI study-explanation state for questions without a linked key.
-- Switch between Student and Admin views during local development.
-- Review the ingestion queue, source materials, and approved course topic map in the Admin view.
+[![Live Demo](https://img.shields.io/badge/▶_LIVE_DEMO-ai--library--assistant--ten.vercel.app-F2C46D?style=for-the-badge&labelColor=0A1428)](https://ai-library-assistant-ten.vercel.app)
 
-## Why this is useful
+<br/>
 
-The project removes the manual workflow of opening year-labelled PDFs one at a time and guessing which questions match a teacher's topic list. It is designed around a simple rule: **students search for what they are learning, while the original paper remains the source of truth.**
+![Next.js](https://img.shields.io/badge/Next.js_15-000000?style=flat-square&logo=nextdotjs&logoColor=white)
+![React](https://img.shields.io/badge/React_19-20232A?style=flat-square&logo=react&logoColor=61DAFB)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![Tailwind](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)
+![OpenAI](https://img.shields.io/badge/OpenAI-412991?style=flat-square&logo=openai&logoColor=white)
+![Vercel](https://img.shields.io/badge/Deployed_on_Vercel-000000?style=flat-square&logo=vercel&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase_+_pgvector-3ECF8E?style=flat-square&logo=supabase&logoColor=white)
 
-Course handouts define the syllabus language. Past papers provide the questions. Exam notices help students choose the right slice of the syllabus for an upcoming assessment. This makes it possible to find a Marxism question from a comprehensive paper while preparing for a quiz, or to focus on a single topic such as Liberalism without losing the source context.
+[**Try it live**](https://ai-library-assistant-ten.vercel.app) · [**60-second judge tour**](#-60-second-tour-for-judges) · [**Architecture**](#-architecture) · [**Run locally**](#-run-it-locally)
 
-## Product flow
+</div>
 
-```mermaid
-flowchart LR
-  A[Past papers and answer keys] --> I[Ingestion pipeline]
-  B[Course handout] --> I
-  I --> R[Admin review queue]
-  R --> T[Approved topics and question tags]
-  T --> S[Student topic search]
-  N[Student exam notice or typed topics] --> M[Private topic matching]
-  M --> S
-  S --> Q[Questions from Quiz, Mid-sem, and Comprehensive papers]
-  Q --> P[Practice set, answer key, and source page]
-```
+---
 
-## Architecture
+## 🎯 The problem
 
-```mermaid
-flowchart TB
-  subgraph Client[Next.js student and admin interface]
-    Student[Student search, notice matching, practice]
-    Admin[Admin review and material queue]
-  end
+It's the night before the mid-sem. Your exam notice lists *"Prim's, Dijkstra, Network Flow."* The library gives you past papers as **year-labelled PDFs**: one per semester, from four campuses, some scanned, some bundling five exams in one file.
 
-  subgraph API[Next.js API routes]
-    Search[Question search]
-    Notice[Private notice preview]
-    Practice[Practice-set generator]
-    Explain[Study explanation]
-    Materials[Material upload and processing]
-  end
+So you open them one by one, scroll, squint, and hope you didn't miss the one question that matters.
 
-  subgraph Data[Local Supabase design]
-    DB[(Postgres + pgvector)]
-    Storage[Private file storage]
-  end
+> **Every student asks the same questions:** *Which past questions cover this topic? Has it come up in a quiz, or only in the compre? What should I actually practise for this notice?* The PDFs can't answer any of them.
 
-  subgraph AI[OpenAI API when configured]
-    Extract[Structured extraction]
-    Match[Topic matching]
-    ExplainAI[Grounded explanations]
-  end
+## 💡 Our solution
 
-  Student --> Search
-  Student --> Notice
-  Student --> Practice
-  Student --> Explain
-  Admin --> Materials
-  Search --> DB
-  Materials --> Storage
-  Materials --> Extract
-  Extract --> DB
-  Notice --> Match
-  Match --> DB
-  Explain --> ExplainAI
-  ExplainAI --> DB
-```
+**AI Library Assistant turns a pile of past papers, handouts, answer keys and exam notices into a topic-first study tool.**
 
-## Technology
-
-| Area | Choice | Purpose |
+| | You do this | You get this |
 |---|---|---|
-| Web application | Next.js, TypeScript, React | Modern local web interface and API routes |
-| Styling | Tailwind CSS | Responsive BITS-inspired visual system |
-| Database design | Supabase PostgreSQL + pgvector | Course metadata, source pages, questions, tags, and semantic retrieval |
-| Storage design | Supabase Storage | Original paper, handout, answer-key, and future upload storage |
-| Document processing | `pdf-parse` and Mammoth | PDF and DOCX text extraction |
-| AI integration | OpenAI Responses API | Explanations and the planned structured extraction and topic-matching workflow |
+| 🔎 | Pick a syllabus topic, or type a concept in your own words | Every matching past question across **Quiz, Test, Mid-sem and Compre**, from **all four campuses** |
+| 🗒️ | Upload your exam notice | Suggested syllabus topics plus a matching practice set. **The notice is never stored.** |
+| 💡 | Get stuck on a question | **Progressive nudges** that guide your thinking without giving the answer away |
+| ✅ | Reveal the answer | The **verified answer key** when one exists, or an AI explanation **clearly labelled** and **cited to the source pages** |
+| 💬 | Ask the study assistant anything | Answers grounded in *your course's* papers, with `[1] [2]` citations that open the original PDF at the exact page |
 
-## Project structure
+<div align="center">
+<img src="docs/images/workflow.png" alt="Workflow: extract and organise, find relevant questions, practise and understand" width="100%" />
+</div>
 
-```text
-app/                     Student UI, admin UI, and API routes
-lib/                     Shared data types and GS F211 local seed data
-scripts/                 Source-file ingestion preparation
-supabase/migrations/     PostgreSQL and pgvector schema
-papers/                  Local past papers and answer keys (excluded from Git)
-course handout /         Local course handout (excluded from Git)
-exam notices /           Local notice fixtures (excluded from Git)
-public/materials/        Local source previews served by the app (excluded from Git)
+---
+
+## 🏆 Why this stands out
+
+<table>
+<tr>
+<td width="50%" valign="top">
+
+### 🧠 Real hybrid retrieval, not a chatbot wrapper
+Keyword search (**BM25**) and meaning search (**OpenAI embeddings**) run side by side and are merged with **Reciprocal Rank Fusion**. Ask *"when does quicksort get slow?"* and it still finds the paper that says *"worst-case pivot."* A keyword veto removes hits that share only incidental words.
+
+</td>
+<td width="50%" valign="top">
+
+### 📎 Every answer is traceable
+Citations like `[2]` link straight to `paper.pdf#page=7`. Verified answer keys are kept apart from AI text. When the model goes beyond the sources, it has to start with *"General explanation (not from your course material)"*.
+
+</td>
+</tr>
+<tr>
+<td valign="top">
+
+### 🎓 Built to make students learn, not just copy
+Hints come **before** answers. The [research we based this on](docs/retrieval-and-guided-hints-research.md) found that unrestricted AI help **lowered** students' unaided exam scores by 17%, while tutoring guided by teacher-designed hints largely avoided that harm. So nudges escalate from a reflective question to a strategy cue to a partial step, and never to a full solution.
+
+</td>
+<td valign="top">
+
+### 🔒 Privacy by design
+Exam notices are parsed **in memory**, matched against the syllabus by keyword, and thrown away. The API response literally says `persisted: false`. No student account or tracking is needed.
+
+</td>
+</tr>
+<tr>
+<td valign="top">
+
+### 🖼️ Handles messy, real-world papers
+Scanned PDFs are OCR'd with **Tesseract**, and results are cached. Bundled PDFs are split into their individual exams. Graph questions keep their **original diagram** alongside a transcription, so students solve the real problem.
+
+</td>
+<td valign="top">
+
+### 🛟 Degrades gracefully
+No API key? Keyword search, topic matching, nudges and verified answers all still work, and the assistant returns the best-matching source passages. AI is an enhancement, not a single point of failure.
+
+</td>
+</tr>
+</table>
+
+---
+
+## 📸 Screenshots
+
+<table>
+<tr>
+<td width="50%"><img src="docs/images/home.png" alt="Library-style start screen"/><p align="center"><b>Library-style start screen</b></p></td>
+<td width="50%"><img src="docs/images/course.png" alt="Course page with exam-notice upload and papers by campus"/><p align="center"><b>Exam-notice upload + papers by campus</b></p></td>
+</tr>
+<tr>
+<td width="50%"><img src="docs/images/search.png" alt="Topic-first search with campus and exam-type filters"/><p align="center"><b>Topic-first search across every exam type</b></p></td>
+<td width="50%"><img src="docs/images/assistant.png" alt="Study assistant answering with LaTeX and citations"/><p align="center"><b>Study assistant with rendered maths and citations</b></p></td>
+</tr>
+<tr>
+<td colspan="2"><img src="docs/images/question-card.png" alt="Question card with the original graph and source context"/><p align="center"><b>Diagram questions keep the original figure and page context</b></p></td>
+</tr>
+</table>
+
+---
+
+## ⏱️ 60-second tour for judges
+
+| # | Try this | Link |
+|---|---|---|
+| 1 | Open the start screen | [ai-library-assistant-ten.vercel.app](https://ai-library-assistant-ten.vercel.app) |
+| 2 | Browse **Algorithms** papers and switch between the Dubai and Hyderabad campuses | [/courses/cs-f364](https://ai-library-assistant-ten.vercel.app/courses/cs-f364) |
+| 3 | See every **Graphs, MST & Shortest Paths** question at once, then open *View graph and source context* | [Topic search →](https://ai-library-assistant-ten.vercel.app/courses/cs-f364/search?topic=graphs) |
+| 4 | Click **Think it through · get a nudge**, then **Reveal answer / explanation** | same page |
+| 5 | Click **Ask the study assistant** → *"When is quicksort worst case?"* and open a cited source | same page |
+| 6 | On **Modern Political Concepts**, click *Or paste the notice text*, paste `Mid-sem: Marxism, Feminism`, and hit *Find matching questions* | [/courses/gs-f211](https://ai-library-assistant-ten.vercel.app/courses/gs-f211) |
+| 7 | Try **Machine Learning**: *"Explain PCA step by step"* | [/courses/bits-f464](https://ai-library-assistant-ten.vercel.app/courses/bits-f464) |
+
+---
+
+## 🏗️ Architecture
+
+<div align="center">
+<img src="docs/images/architecture.svg" alt="System architecture: sources, offline pipeline, hybrid retrieval and grounded AI, Next.js API routes, student experience" width="100%" />
+</div>
+
+**How it fits together:**
+
+1. **Sources.** Past papers, handouts and answer keys are organised per course and per campus.
+2. **Offline pipeline.** `npm run ingest` extracts text page by page (pdf-parse, Mammoth, Tesseract OCR for scanned pages). `npm run embed` writes a plain-language profile for each question and embeds every passage and question with `text-embedding-3-small`. Only new or changed text is re-sent, so re-runs are quick and cheap.
+3. **Hybrid retrieval.** BM25 and vector search each rank the top 30. Keyword hits that are unrelated in meaning are vetoed, and the two lists are fused by rank, so BM25 scores and cosine similarities never have to share a scale.
+4. **Grounded generation.** `gpt-4.1-mini` answers using only the retrieved passages, cites them inline and labels anything beyond them. Explanations always read the **question's own page first**, so the model sees the real numbers, tables and graph weights.
+5. **Serverless API on Vercel**, serving a library-style React UI with KaTeX maths.
+
+### What happens when a student asks a question
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor S as Student
+    participant UI as Study assistant (React)
+    participant API as /api/chat (Vercel)
+    participant R as Hybrid retriever
+    participant E as OpenAI embeddings
+    participant L as gpt-4.1-mini
+
+    S->>UI: "When does quicksort get slow?"
+    UI->>API: last 8 turns + course id
+    API->>R: last two questions (so follow-ups still work)
+    R->>R: BM25 over course passages (top 30)
+    R->>E: embed the expanded query
+    E-->>R: 512-d vector
+    R->>R: cosine ranking ≥ 0.30, keyword veto, RRF
+    R-->>API: top 6 passages with page links
+    API->>L: grounded prompt + numbered sources
+    L-->>API: answer with [1] [2] citations
+    API-->>UI: answer + sources
+    UI-->>S: rendered LaTeX, links open PDF#page=N
 ```
 
-## Run locally
+### Data model (ready for Supabase)
 
-### Prerequisites
+The schema in [`supabase/migrations/001_initial_schema.sql`](supabase/migrations/001_initial_schema.sql) models `Subject → Topic`, `CourseMaterial → MaterialPage`, `Question ↔ QuestionTopic` and `AnswerKeyLink`, with **pgvector** columns for semantic search. Student notices are deliberately **left out** of the persistent model.
 
-- Node.js 20 or later
-- npm
-- Docker Desktop if you want to run the local Supabase stack
-- An OpenAI API key only if you want generated study explanations
+---
 
-### Start the app
+## 📊 By the numbers
+
+<div align="center">
+
+| 🏫 Campuses | 📚 Courses | 🏷️ Syllabus topics | ❓ Curated questions | 📄 Pages catalogued | 🧮 Embedded vectors |
+|:---:|:---:|:---:|:---:|:---:|:---:|
+| **4** | **3** | **24** | **52** | **352** | **1,082** |
+
+</div>
+
+**Courses in the pilot:**
+- **GS F211** · Modern Political Concepts (Liberalism, Marxism, Feminism, Fascism, Capitalism, Chinese Revolution)
+- **CS F364** · Design and Analysis of Algorithms (Divide & Conquer, Greedy, Graphs, Network Flow, DP, Backtracking, NP-Completeness, LP)
+- **BITS F464** · Machine Learning (Evaluation, Regression, Trees, SVMs, Clustering, PCA/LDA, Neural Nets, RL)
+
+---
+
+## 🧪 Quality checks
+
+We test retrieval instead of assuming it works:
+
+```bash
+npm run check:retrieval        # known searches ("worst quicksort", "LCS", …) must rank the right question first
+npm run check:visual-context   # graph questions must come back with their original diagrams
+npm run check:semantic         # keyword-only vs hybrid on paraphrased questions that avoid the papers' wording
+```
+
+---
+
+## 🧰 Tech stack
+
+| Layer | Technology | Why |
+|---|---|---|
+| Framework | **Next.js 15** (App Router), **React 19**, **TypeScript** | One codebase for UI and serverless API routes |
+| Styling | **Tailwind CSS**, Lucide icons | A library-style UI that feels at home on campus |
+| Maths | **KaTeX** | Recurrences and formulas render properly in answers |
+| Document processing | **pdf-parse**, **Mammoth**, **Tesseract OCR** | PDFs, DOCX and scanned papers |
+| Retrieval | Custom **BM25** + **OpenAI `text-embedding-3-small`** + **RRF** | Exact terms *and* paraphrases |
+| Generation | **OpenAI Responses API**, `gpt-4.1-mini` | Fast, inexpensive, grounded answers |
+| Data | **Supabase Postgres + pgvector** schema, JSON catalogue at runtime | Ready to scale beyond the pilot |
+| Hosting | **Vercel** (full app) and **GitHub Pages** (static demo) | Zero-ops deployment |
+
+---
+
+## 🚀 Run it locally
+
+**Prerequisites:** Node.js 20+, npm. Optional: an OpenAI API key, `brew install tesseract` for OCR, Docker for local Supabase.
 
 ```bash
 git clone https://github.com/sanya28wd/AI-Library-Assistant.git
 cd AI-Library-Assistant
 npm install
-npm run ingest
-npm run dev
+npm run ingest          # extract text from papers, handouts and keys
+npm run dev             # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
-
-The demo covers three courses, GS F211, CS F364 and BITS F464, with the reviewed seed dataset in `lib/seed.ts`. To ingest your authorized course material, add source files under `papers/` (one subfolder per course, and per campus if needed), `course handout /`, and `exam notices /`, then run `npm run ingest`. The script walks subfolders, hashes files, extracts text page by page, and writes a local review catalogue to `data/ingested-materials.json`. On macOS with `tesseract` installed (`brew install tesseract`), scanned PDF pages are OCR'd automatically and cached in `data/ocr-cache/`; elsewhere they are flagged for OCR review. New papers also need an entry in `materials` in `lib/seed.ts`, with `sections` when one PDF bundles several exams.
-
-Course PDFs, answer keys, notices, generated catalogues, and local source previews are tracked in this private repository so the project team can reproduce the GS F211 pilot. Keep the repository private and do not redistribute these academic materials or student notices without permission.
-
-### Enable AI explanations
+**Turn on AI explanations and meaning search:**
 
 ```bash
-cp .env.example .env.local
+cp .env.example .env.local     # then set OPENAI_API_KEY=...
+npm run embed                  # question profiles + embeddings (incremental)
 ```
 
-Add your key:
+Without a key, the app falls back to keyword search and sources-only answers. Everything else still works.
 
-```text
-OPENAI_API_KEY=your_key_here
-```
+**Add a new course:** put its files under `papers/<course>/<campus>/`, `course handout /` and `exam notices /`, add the materials and topics to [`lib/seed.ts`](lib/seed.ts), then run `npm run ingest && npm run embed`.
 
-Keys are excluded from Git through `.gitignore`.
-
-### Meaning search (embeddings)
-
-Retrieval is hybrid: BM25 keyword matching plus meaning matching with OpenAI embeddings (`text-embedding-3-small`, 512 dimensions), combined by reciprocal rank fusion. The study assistant and AI explanations use it for passages, and the question search page adds a *Related by meaning* section for questions that cover the same idea in different words.
-
-After `npm run ingest`, run `npm run embed` (needs `OPENAI_API_KEY` in `.env.local`). It writes a short plain-language profile for each curated question (`data/question-profiles.json`) and embeds every passage and question into `data/embeddings.json`. Only new or changed texts are sent, so re-runs are quick and cheap. Without the file or a key, the site falls back to keyword search.
-
-`npm run check:semantic` compares keyword-only and hybrid retrieval on paraphrased questions that avoid the papers' own wording.
-
-### Static demo on GitHub Pages
-
-Every push to `main` runs `.github/workflows/deploy-pages.yml`, which builds a static export (`GITHUB_PAGES=true npm run build`) and publishes it to https://sanya28wd.github.io/AI-Library-Assistant/. GitHub Pages cannot run API routes, so the static demo leaves out the study chatbot, notice file upload and AI explanations; pasted notice text is still matched in the browser. Run the app locally for the full version.
-
-### Demo runbook
-
-Present from the **local full version** so the study assistant and AI explanations work: put `OPENAI_API_KEY` in `.env.local` and run `npm run dev`. Share the GitHub Pages link afterwards for people to browse on their own.
-
-A five-minute walk-through:
-
-1. **Start screen** (`/`): the library-style landing page and the three course cards.
-2. **Course page** (e.g. Machine Learning): switch campuses with the Dubai / Hyderabad / Goa / Pilani buttons, and open an exam inside a bundled PDF.
-3. **Exam notice**: upload `exam notices /Untitled document (5) copy.pdf` on GS F211 (a mid-sem notice), keep the suggested topics, and click *Find matching questions*.
-4. **Explanations**: on a question card, click *Reveal answer / explanation*. Verified answers show instantly; other questions get a cited AI explanation labelled as not verified by faculty.
-5. **Study assistant**: click *Ask the study assistant*, ask e.g. "When is quicksort worst case?" on CS F364, and open one of the cited source pages.
-
-### Start local Supabase
-
-The repository includes the initial migration at `supabase/migrations/001_initial_schema.sql`.
+<details>
+<summary><b>Optional: local Supabase</b></summary>
 
 ```bash
 npx supabase start
 ```
 
-It creates the database model for `Subject`, `Topic`, `CourseMaterial`, `MaterialPage`, `Question`, `QuestionTopic`, and `AnswerKeyLink`. Student exam notices are intentionally excluded from this persistent model.
+This applies `supabase/migrations/001_initial_schema.sql` (Postgres + pgvector).
+</details>
 
-## API surface
+<details>
+<summary><b>Optional: static GitHub Pages build</b></summary>
 
-| Route | Purpose |
+Every push to `main` runs [`.github/workflows/deploy-pages.yml`](.github/workflows/deploy-pages.yml), which builds a static export (`GITHUB_PAGES=true npm run build`). Pages cannot run API routes, so that build leaves out the assistant, file upload and AI explanations, though pasted notice text is still matched in the browser. **Use the [Vercel deployment](https://ai-library-assistant-ten.vercel.app) for the full experience.**
+</details>
+
+---
+
+## 🔌 API
+
+| Route | What it does |
 |---|---|
-| `GET /api/questions` | Search reviewed questions by course, topic, assessment type, campus, and free text |
-| `POST /api/notices/preview` | Return temporary course-topic suggestions from an uploaded or pasted notice |
-| `POST /api/chat` | Course study assistant: retrieve passages from the ingested papers and answer with citations |
-| `POST /api/questions/:id/explanation` | Return a verified answer, or an AI explanation grounded in the question's own page and related course material |
-| `POST /api/admin/materials` | Placeholder: will queue an uploaded course material for review (staff workflow, not built yet) |
-| `POST /api/admin/materials/:id/process` | Placeholder: will process a queued material |
-| `POST /api/admin/questions/:id/publish` | Placeholder: will publish an approved question |
+| `GET /api/questions` | Search the question bank by course, topic, exam type, campus and free text |
+| `GET /api/questions/related` | *Related by meaning*: questions on the same idea in different words |
+| `POST /api/notices/preview` | Exam notice (file or text) → suggested topics and exam type. **Never persisted.** |
+| `POST /api/chat` | Course study assistant: hybrid retrieval plus a grounded, cited answer |
+| `POST /api/questions/:id/explanation` | Verified answer key if one exists, otherwise a cited AI explanation |
+| `POST /api/admin/*` | Placeholders for the staff review workflow (roadmap) |
 
-## Privacy and review principles
+---
 
-- An exam notice is only used to identify topics for the student who supplied it. The local notice-preview route does not write notice content to the database.
-- AI-generated tags and extracted questions should be reviewed by an admin before they are published for student search.
-- Original source files and page numbers remain attached to every question so a student can verify context.
-- Generated explanations are distinct from verified answer-key content.
+## 🧭 Principles we built by
 
-## Current pilot scope
+1. **The original paper is the source of truth.** Every question links back to its file and page.
+2. **Verified answers ≠ AI answers.** They look different and are labelled differently.
+3. **Help students think before showing the answer.** Nudges come first; solutions are a deliberate click away.
+4. **A student's notice belongs to the student.** It is read once and never stored.
+5. **AI suggests, humans approve.** Extracted questions and topic tags are designed to pass staff review before students see them.
 
-This first version focuses on the GS F211 local dataset and a development role switch. It is prepared for a Supabase-backed admin workflow, but campus single sign-on, production hosting, durable student accounts, progress tracking, and multi-subject rollout are intentionally future work.
+---
 
-## Contributing
+## 🛣️ Roadmap
 
-For a new subject, add its handout, papers, and answer keys through the planned Admin workflow; then create and approve the subject's topic map before publishing its questions. Keep the source material available and review AI suggestions before students rely on them.
+- [ ] Staff review queue: upload → AI extraction → approve → publish
+- [ ] Move the catalogue and vectors into Supabase pgvector
+- [ ] Campus single sign-on and saved practice progress
+- [ ] Full-paper question segmentation, so every question is searchable, not only the curated bank
+- [ ] Roll out to more courses and all four campus libraries
+
+---
+
+## 👥 Team
+
+**Sanya Wadhawan** · **Chirudeva Reddy**
+
+<div align="center">
+
+<br/>
+
+### Less time searching. More time preparing.
+
+[![Try it now](https://img.shields.io/badge/Try_it_now-ai--library--assistant--ten.vercel.app-F2C46D?style=for-the-badge&labelColor=0A1428)](https://ai-library-assistant-ten.vercel.app)
+
+<sub>Course materials are included for the BITS Pilani pilot only. Please don't redistribute papers, answer keys or notices without permission.</sub>
+
+</div>
