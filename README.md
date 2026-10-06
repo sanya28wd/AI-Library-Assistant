@@ -244,18 +244,42 @@ cp .env.example .env.local     # then set OPENAI_API_KEY=...
 npm run embed                  # question profiles + embeddings (incremental)
 ```
 
-Without a key, the app falls back to keyword search and sources-only answers. Everything else still works.
+Set `RETRIEVAL_BACKEND=local` to use the checked-in catalogue and embeddings during local development. Without an OpenAI key, the non-AI library search still works, but chat generation and semantic query embedding are unavailable.
 
 **Add a new course:** put its files under `papers/<course>/<campus>/`, `course handout /` and `exam notices /`, add the materials and topics to [`lib/seed.ts`](lib/seed.ts), then run `npm run ingest && npm run embed`.
 
 <details>
-<summary><b>Optional: local Supabase</b></summary>
+<summary><b>Supabase PostgreSQL + pgvector retrieval</b></summary>
+
+The production retrieval path stores normalized course metadata, extracted pages, questions and 512-dimensional passage embeddings in Supabase. It filters by course in PostgreSQL and ranks passages with a cosine-distance HNSW index.
+
+1. Create a Supabase project and copy `.env.example` to `.env.local`.
+2. Set `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY` and `OPENAI_API_KEY`. Keep the secret key server-side and never expose it through a `NEXT_PUBLIC_` variable.
+3. Link the project and apply the migration:
+
+```bash
+npx supabase login
+npx supabase link --project-ref <project-ref>
+npx supabase db push
+```
+
+4. Build the local catalogue and embeddings, then synchronize them:
+
+```bash
+npm run ingest
+npm run embed
+npm run sync:supabase
+```
+
+5. Set `RETRIEVAL_BACKEND=supabase` in `.env.local` and in the Vercel project. Add `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY` and `OPENAI_API_KEY` to Vercel; `SUPABASE_SECRET_KEY` is needed only by the synchronization command and should not be added to the deployed application.
+
+For a completely local database, start Supabase before synchronizing:
 
 ```bash
 npx supabase start
 ```
 
-This applies `supabase/migrations/001_initial_schema.sql` (Postgres + pgvector).
+The synchronization command replaces the generated retrieval-passage index while preserving the normalized course, material and question records. Run it again after changing source documents or embeddings.
 </details>
 
 <details>
