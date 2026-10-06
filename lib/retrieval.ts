@@ -8,6 +8,14 @@ type IngestedMaterial = { fileName: string; relativePath?: string; extension: st
 
 type Passage = { material: Material; page: number | null; text: string; terms: Map<string, number>; sequence: string; length: number; visuals: QuestionVisual[] };
 
+export type PassageRecord = {
+  courseId: string;
+  materialId: string;
+  page: number | null;
+  text: string;
+  visuals: QuestionVisual[];
+};
+
 const stopwords = new Set("the and for are but not you all any can had her was one our out has his how its may who did get him she too use what when where which while with this that from they them then than there their these those would could should about into your more most some such only other also been being have were will each does just very what's explain".split(" "));
 
 // Notices are student-specific and never part of the answerable corpus.
@@ -120,7 +128,7 @@ const abbreviations: Record<string, string> = {
   dfs: "depth first search"
 };
 
-function expandAbbreviations(query: string): string {
+export function expandAbbreviations(query: string): string {
   return query.replace(/[A-Za-z]+/g, (word) => {
     const expansion = abbreviations[word.toLowerCase()];
     return expansion ? `${word} ${expansion}` : word;
@@ -185,10 +193,17 @@ function rankByMeaning(vector: Float32Array, index: Passage[], limit: number): P
 }
 
 /**
- * Hybrid retrieval: BM25 keyword matches fused with embedding (meaning) matches by reciprocal rank fusion.
- * Falls back to keywords alone when there is no API key or `npm run embed` has not been run.
+ * Uses course-filtered Supabase vector retrieval in production. Local development fuses BM25 keyword matches
+ * with embedding matches and uses keywords alone when local embeddings are unavailable.
  */
 export async function hybridRetrieve(query: string, courseId: string, limit = 6): Promise<ChatSource[]> {
+  if (process.env.RETRIEVAL_BACKEND === "supabase") {
+    const { retrieveFromSupabase } = await import("@/lib/supabase-retrieval");
+    return retrieveFromSupabase(expandAbbreviations(query), courseId, limit);
+  }
+  if (process.env.RETRIEVAL_BACKEND !== "local") {
+    throw new Error("RETRIEVAL_BACKEND must be set to 'supabase' or 'local'.");
+  }
   const index = coursePassages(courseId);
   const keyword = rankByKeywords(query, index, 30);
   const vector = await embedQuery(expandAbbreviations(query));
@@ -211,6 +226,17 @@ export async function hybridRetrieve(query: string, courseId: string, limit = 6)
 /** Every passage text in the index, for `npm run embed`. */
 export function passageTexts(): string[] {
   return [...new Set(currentIndex().map((passage) => passage.text))];
+}
+
+/** Normalized passage records used by the database synchronization command. */
+export function passageRecords(): PassageRecord[] {
+  return currentIndex().map((passage) => ({
+    courseId: passage.material.courseId,
+    materialId: passage.material.id,
+    page: passage.page,
+    text: passage.text,
+    visuals: passage.visuals
+  }));
 }
 
 /** The full extracted text of one paper page, so an explanation always sees the question's own data and tables. */
