@@ -254,7 +254,7 @@ Set `RETRIEVAL_BACKEND=local` to use the checked-in catalogue and embeddings dur
 The production retrieval path stores normalized course metadata, extracted pages, questions and 512-dimensional passage embeddings in Supabase. It filters by course in PostgreSQL and ranks passages with a cosine-distance HNSW index.
 
 1. Create a Supabase project and copy `.env.example` to `.env.local`.
-2. Set `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` and `OPENAI_API_KEY`. Keep the service-role key server-side and never expose it through a `NEXT_PUBLIC_` variable.
+2. Set `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY` and `OPENAI_API_KEY`. Keep the secret key server-side and never expose it through a `NEXT_PUBLIC_` variable.
 3. Link the project and apply the migration:
 
 ```bash
@@ -271,7 +271,7 @@ npm run embed
 npm run sync:supabase
 ```
 
-5. Set `RETRIEVAL_BACKEND=supabase` in `.env.local` and in the Vercel project. Add `SUPABASE_URL`, `SUPABASE_ANON_KEY` and `OPENAI_API_KEY` to Vercel; the service-role key is needed only by the synchronization command and should not be added to the deployed application.
+5. Set `RETRIEVAL_BACKEND=supabase` in `.env.local` and in the Vercel project. Add `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY` and `OPENAI_API_KEY` to Vercel; `SUPABASE_SECRET_KEY` is needed only by the synchronization command and should not be added to the deployed application.
 
 For a completely local database, start Supabase before synchronizing:
 

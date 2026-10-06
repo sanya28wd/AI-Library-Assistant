@@ -27,7 +27,7 @@ function requiredEnvironmentVariable(name: string): string {
 function client(): SupabaseClient {
   return createClient(
     requiredEnvironmentVariable("SUPABASE_URL"),
-    requiredEnvironmentVariable("SUPABASE_ANON_KEY"),
+    requiredEnvironmentVariable("SUPABASE_PUBLISHABLE_KEY"),
     { auth: { persistSession: false, autoRefreshToken: false } }
   );
 }

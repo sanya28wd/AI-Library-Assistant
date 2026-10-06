@@ -27,7 +27,7 @@ function requiredEnvironmentVariable(name: string): string {
 function serviceClient(): SupabaseClient {
   return createClient(
     requiredEnvironmentVariable("SUPABASE_URL"),
-    requiredEnvironmentVariable("SUPABASE_SERVICE_ROLE_KEY"),
+    requiredEnvironmentVariable("SUPABASE_SECRET_KEY"),
     { auth: { persistSession: false, autoRefreshToken: false } }
   );
 }
