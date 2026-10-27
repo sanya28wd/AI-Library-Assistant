@@ -17,6 +17,8 @@
 ![Next.js](https://img.shields.io/badge/Next.js_15-000000?style=flat-square&logo=nextdotjs&logoColor=white)
 ![React](https://img.shields.io/badge/React_19-20232A?style=flat-square&logo=react&logoColor=61DAFB)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white)
 ![Tailwind](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)
 ![OpenAI](https://img.shields.io/badge/OpenAI-412991?style=flat-square&logo=openai&logoColor=white)
 ![Vercel](https://img.shields.io/badge/Deployed_on_Vercel-000000?style=flat-square&logo=vercel&logoColor=white)
@@ -144,10 +146,10 @@ No API key? Keyword search, topic matching, nudges and verified answers all stil
 **How it fits together:**
 
 1. **Sources.** Past papers, handouts and answer keys are organised per course and per campus.
-2. **Offline pipeline.** `npm run ingest` extracts text page by page (pdf-parse, Mammoth, Tesseract OCR for scanned pages). `npm run embed` writes a plain-language profile for each question and embeds every passage and question with `text-embedding-3-small`. Only new or changed text is re-sent, so re-runs are quick and cheap.
+2. **Offline pipeline.** `python -m backend.ingest` extracts text page by page (PyMuPDF, Mammoth, Tesseract OCR for scanned pages). `python -m backend.embed` writes a plain-language profile for each question and embeds every passage and question with `text-embedding-3-small`. Only new or changed text is re-sent, so re-runs are quick and cheap.
 3. **Hybrid retrieval.** BM25 and vector search each rank the top 30. Keyword hits that are unrelated in meaning are vetoed, and the two lists are fused by rank, so BM25 scores and cosine similarities never have to share a scale.
 4. **Grounded generation.** `gpt-4.1-mini` answers using only the retrieved passages, cites them inline and labels anything beyond them. Explanations always read the **question's own page first**, so the model sees the real numbers, tables and graph weights.
-5. **Serverless API on Vercel**, serving a library-style React UI with KaTeX maths.
+5. **Python API (FastAPI)** in [`backend/`](backend/), running as a serverless function on Vercel, serving a library-style React UI with KaTeX maths.
 
 ### What happens when a student asks a question
 
@@ -203,9 +205,9 @@ The schema in [`supabase/migrations/001_initial_schema.sql`](supabase/migrations
 We test retrieval instead of assuming it works:
 
 ```bash
-npm run check:retrieval        # known searches ("worst quicksort", "LCS", …) must rank the right question first
-npm run check:visual-context   # graph questions must come back with their original diagrams
-npm run check:semantic         # keyword-only vs hybrid on paraphrased questions that avoid the papers' wording
+npm run check:retrieval -- http://localhost:3000                       # known searches must rank the right question first; browser and API agree
+.venv/bin/python -m backend.check_visual_context http://localhost:3000  # graph questions must come back with their original diagrams
+.venv/bin/python -m backend.check_semantic                              # keyword-only vs hybrid on paraphrased questions
 ```
 
 ---
@@ -214,10 +216,11 @@ npm run check:semantic         # keyword-only vs hybrid on paraphrased questions
 
 | Layer | Technology | Why |
 |---|---|---|
-| Framework | **Next.js 15** (App Router), **React 19**, **TypeScript** | One codebase for UI and serverless API routes |
+| Frontend | **Next.js 15** (App Router), **React 19**, **TypeScript** | Library-style student and admin pages |
+| Backend | **Python**, **FastAPI** | Retrieval, chat, explanations and the data pipeline, in readable Python |
 | Styling | **Tailwind CSS**, Lucide icons | A library-style UI that feels at home on campus |
 | Maths | **KaTeX** | Recurrences and formulas render properly in answers |
-| Document processing | **pdf-parse**, **Mammoth**, **Tesseract OCR** | PDFs, DOCX and scanned papers |
+| Document processing | **PyMuPDF**, **Mammoth**, **Tesseract OCR** | PDFs, DOCX and scanned papers |
 | Retrieval | Custom **BM25** + **OpenAI `text-embedding-3-small`** + **RRF** | Exact terms *and* paraphrases |
 | Generation | **OpenAI Responses API**, `gpt-4.1-mini` | Fast, inexpensive, grounded answers |
 | Data | **Supabase Postgres + pgvector** schema, JSON catalogue at runtime | Ready to scale beyond the pilot |
@@ -227,26 +230,32 @@ npm run check:semantic         # keyword-only vs hybrid on paraphrased questions
 
 ## 🚀 Run it locally
 
-**Prerequisites:** Node.js 20+, npm. Optional: an OpenAI API key, `brew install tesseract` for OCR, Docker for local Supabase.
+**Prerequisites:** Node.js 20+, npm, Python 3.11+. Optional: an OpenAI API key, `brew install tesseract` for OCR, Docker for local Supabase.
 
 ```bash
 git clone https://github.com/sanya28wd/AI-Library-Assistant.git
 cd AI-Library-Assistant
 npm install
-npm run ingest          # extract text from papers, handouts and keys
-npm run dev             # http://localhost:3000
+python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
+```
+
+Run the backend and the site in two terminals:
+
+```bash
+npm run api             # Python backend on http://127.0.0.1:8000 (API docs at /docs)
+npm run dev             # http://localhost:3000, forwards /api requests to the backend
 ```
 
 **Turn on AI explanations and meaning search:**
 
 ```bash
 cp .env.example .env.local     # then set OPENAI_API_KEY=...
-npm run embed                  # question profiles + embeddings (incremental)
+.venv/bin/python -m backend.embed   # question profiles + embeddings (incremental)
 ```
 
 Without a key, the app falls back to keyword search and sources-only answers. Everything else still works.
 
-**Add a new course:** put its files under `papers/<course>/<campus>/`, `course handout /` and `exam notices /`, add the materials and topics to [`lib/seed.ts`](lib/seed.ts), then run `npm run ingest && npm run embed`.
+**Add a new course:** put its files under `papers/<course>/<campus>/`, `course handout /` and `exam notices /`, add the materials and topics to [`data/catalog.json`](data/catalog.json), then run `.venv/bin/python -m backend.ingest && .venv/bin/python -m backend.embed`.
 
 <details>
 <summary><b>Optional: local Supabase</b></summary>
@@ -261,12 +270,14 @@ This applies `supabase/migrations/001_initial_schema.sql` (Postgres + pgvector).
 <details>
 <summary><b>Optional: static GitHub Pages build</b></summary>
 
-Every push to `main` runs [`.github/workflows/deploy-pages.yml`](.github/workflows/deploy-pages.yml), which builds a static export (`GITHUB_PAGES=true npm run build`). Pages cannot run API routes, so that build leaves out the assistant, file upload and AI explanations, though pasted notice text is still matched in the browser. **Use the [Vercel deployment](https://ai-library-assistant-ten.vercel.app) for the full experience.**
+Every push to `main` runs [`.github/workflows/deploy-pages.yml`](.github/workflows/deploy-pages.yml), which builds a static export (`GITHUB_PAGES=true npm run build`). Pages cannot run the Python backend, so that build leaves out the assistant, file upload and AI explanations, though pasted notice text is still matched in the browser. **Use the [Vercel deployment](https://ai-library-assistant-ten.vercel.app) for the full experience.**
 </details>
 
 ---
 
 ## 🔌 API
+
+All routes live in [`backend/app.py`](backend/app.py).
 
 | Route | What it does |
 |---|---|

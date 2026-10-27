@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { detectAssessment, matchTopics } from "../lib/notice";
 import { searchQuestions } from "../lib/question-search";
 import { assessmentOf, materialForId, questionsForCourse } from "../lib/seed";
 import { nudgesForQuestion } from "../lib/study-nudges";
@@ -46,9 +47,17 @@ async function check(): Promise<void> {
     const answer = question.answer;
     if (answer) assert.ok(nudges.every((nudge) => !nudge.includes(answer)), "Do not copy answer-key text into a nudge");
   }
+  // The browser (lib/notice.ts) and the backend (backend/notice.py) must read a pasted notice the same way.
+  const notices = [["cs-f364", "COMPRE notice: Dijkstra, Huffman and 0/1 knapsack"], ["gs-f211", "Mid-sem test 2 covers Marx, patriarchy and the welfare state"], ["bits-f464", "Quiz on k-means, PCA and SVM kernels"], ["cs-f364", "primary venue"]];
+  for (const [courseId, text] of notices) {
+    const response = await fetch(new URL("/api/notices/preview", serverUrl), { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ courseId, text }) });
+    const payload = await response.json() as { data: { id: string }[]; assessmentType: string | null };
+    assert.deepEqual(payload.data.map((topic) => topic.id), matchTopics(text, courseId).map((topic) => topic.id), `Notice topic parity for ${text}`);
+    assert.equal(payload.assessmentType, detectAssessment(text), `Notice exam-type parity for ${text}`);
+  }
   const invalid = new URL("/api/questions?assessment=Invalid", serverUrl);
   assert.equal((await fetch(invalid)).status, 400);
-  console.log(`Passed ${cases.length} retrieval cases, live API parity, exact filtered enumeration, no-match, input immutability and nudge structure. Hint quality and leakage still require human review.`);
+  console.log(`Passed ${cases.length} retrieval cases, live API parity, notice parity, exact filtered enumeration, no-match, input immutability and nudge structure. Hint quality and leakage still require human review.`);
 }
 
 void check();
