@@ -45,7 +45,7 @@ export function ChatWidget({ course }: { course: Course }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ courseId: course.id, messages: history.map(({ role, content }) => ({ role, content })) })
       });
-      const body = await response.json() as ChatResponse & { error?: string };
+      const body = await response.json().catch(() => ({})) as ChatResponse & { error?: string };
       if (!response.ok) throw new Error(body.error ?? "Something went wrong.");
       setTurns([...history, { role: "assistant", content: body.answer, sources: body.sources, mode: body.mode }]);
     } catch (caught) {

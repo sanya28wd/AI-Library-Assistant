@@ -30,7 +30,7 @@ export function NoticeDropzone({ course }: { course: Course }) {
     setState({ status: "reading", label });
     try {
       const response = await fetch("/api/notices/preview", { method: "POST", ...request });
-      const body = await response.json() as NoticePreview & { error?: string };
+      const body = await response.json().catch(() => ({})) as NoticePreview & { error?: string };
       if (!response.ok) throw new Error(body.error ?? "We could not read that notice.");
       setSelected(body.data.map((topic) => topic.id));
       setLimitToAssessment(true);

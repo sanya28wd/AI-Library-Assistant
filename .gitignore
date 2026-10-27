@@ -5,3 +5,5 @@ data/ingested-materials.json
 .DS_Store
 tsconfig.tsbuildinfo
 out
+.venv
+__pycache__

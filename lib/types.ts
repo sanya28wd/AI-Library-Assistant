@@ -33,7 +33,7 @@ export type Material = {
   title: string;
   /** Path under public/materials. */
   fileName: string;
-  /** Path of the original under the project root, as recorded by `npm run ingest`. */
+  /** Path of the original under the project root, as recorded by `python -m backend.ingest`. */
   source: string;
   kind: MaterialKind;
   year: string;
